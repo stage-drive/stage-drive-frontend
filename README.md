@@ -19,7 +19,7 @@
 0. Спочатку клонуйте репозиторій:
 
 ```bash
-git clone <ссилка-на-репозиторій>
+git clone https://github.com/stage-drive/stage-drive-frontend.git
 ```
 
 1. Встановіть залежності:
