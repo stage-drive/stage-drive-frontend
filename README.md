@@ -198,6 +198,7 @@ develop
 ```bash
 npm run lint
 npm run build.
+```
 
 ### Git cheat sheet
 
