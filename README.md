@@ -15,7 +15,7 @@
 - [Prettier](https://prettier.io/)
 
 ## Швидкий старт
-
+ 
 0. Спочатку клонуйте репозиторій:
 
 ```bash
@@ -111,7 +111,6 @@ src/
 │   │       ├── groupsApi.ts
 │   │       ├── paymentsApi.ts
 │   │       └── scheduleApi.ts
-│   ├── slices/
 │   ├── store.ts
 │   └── ...
 ├── styles/
@@ -151,33 +150,39 @@ src/
 ### Основні гілки
 
 - `main` — продакшн-версія, стабільний релізний код.
+- `test` — середовище для тестування командою QA.
 - `develop` — основна гілка розробки, сюди зливається готовий функціонал.
 
 ### Робочі гілки
 
 - `feature/*` — нові фічі та функціонал
 - `fix/*` — виправлення помилок
+- `bugfix/*` - виправлення багу від QA (за окремою таскою)
 - `refactor/*` — рефакторинг без зміни поведінки
 - `chore/*` — технічні зміни, конфігурації, підтримка проєкту
 
 ### Правило для всіх
 
-Ніхто не працює напряму в `main` або `develop`.
-
 Порядок роботи такий:
 
-1. Створити нову гілку від `develop`.
+1. Створити нову гілку від `main`.
 2. Розробляти задачу в гілці типу `feature/...`, `fix/...` або `refactor/...`.
 3. Після завершення — відкрити Pull Request у `develop`.
-4. Після перевірки та схвалення — виконати злиття в `develop`.
-5. Коли версія готова до релізу — зробити Pull Request з `develop` у `main`.
+4. Мержаєте його (без апрувів) і чекаєте автоматичного деплою на dev-сервер.
+5. Заходьте на dev-сайт і перевіряєте, що ваш функціонал працює.
+6. Якщо на develop все працює чудово cтворюєте другий Pull Request з цієї ж фіча-гілки у `test`. Мержаєте його в test.
+7. Перевіряєте базовий респонс додатку на test-середовищі і віддаєте задачу тестувальникам (QA). 
+8. Якщо під час тестування виявили помилку повертаєтесь, якщо баг незначний — ви можете доправити його прямо в поточній фіча-гілці feature/..., а якщо це окрема задача від QA — створюєте нову гілку bugfix/<CLICKUP-ID>-<description> від `main` і проходите той самий шлях (develop -> test -> main)
+9. Коли QA поставили "Approved" (Схвалено) cтворюєте третій Pull Request -> main.
 
-PR може бути злитий після approval іншого frontend-розробника. Автор PR не виконує merge власного PR без необхідного approval.
+### 1. develop -> 2. test -> 3. main
+
+Злиття в main: PR у main може бути злитий тільки після approval іншого frontend-розробника. Автор PR не виконує merge у main власного PR без необхідного approval.
 
 ### Схема
 
 ```bash
-develop
+main
 ├── feature/AUTH-01-login
 ├── feature/DASH-01-dashboard
 ├── feature/STU-12-students-list
@@ -186,13 +191,6 @@ develop
 ├── feature/SCH-05-create-lesson
 └── ...
 ```
-
-### Важливо
-
-- Не комітити напряму в `main` і `develop`.
-- Усі зміни йдуть через окремі гілки та Pull Request.
-- Спочатку: `feature → develop`
-- Потім: `develop → main`
 
 Перед PR рекомендується виконати 
 ```bash
@@ -203,10 +201,12 @@ npm run build.
 ### Git cheat sheet
 
 ```bash
-# Перейти на develop
-git checkout develop
+# Оновити main і перейти на нього
+git fetch origin
+git checkout main
+git pull origin main
 
-# Створити нову feature-гілку від develop
+# Створити нову feature-гілку від main
 git checkout -b feature/"назва"
 
 # Перевірити статус
@@ -221,13 +221,9 @@ git commit -m "feat: опис коміту"
 # Вивантажити гілку на GitHub
 git push -u origin feature/"назва"
 
-# Обновити локальний develop
-git checkout develop
-git pull origin develop
-
 ```
 
-Після цього відкрийте Pull Request у `develop`.
+Після цього відкрийте перший Pull Request у гілку develop.
 
 ### ClickUp → GitHub
 
