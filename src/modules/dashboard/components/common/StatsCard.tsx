@@ -18,12 +18,12 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   precision,
   suffix,
 }) => (
-  <Card variant="borderless" styles={{body: { padding: '20px 24px' }}}>
+  <Card variant="borderless" styles={{ body: { padding: '20px 24px' } }}>
     <Statistic
       title={title}
       value={value}
       prefix={icon}
-      styles={{content: { color }}}
+      styles={{ content: { color } }}
       precision={precision}
       suffix={suffix}
     />

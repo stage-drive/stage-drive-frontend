@@ -5,9 +5,24 @@ import { DashboardWidget } from '../components/common/DashboardWidget';
 import { SystemEventsWidget } from '../components/owner/SystemEventsWidget';
 
 const mockEvents = [
-  { id: 1, text: 'Сформовано нову групу «Категорія B - Вечірня»', time: '10 хв тому', type: 'info' as const },
-  { id: 2, text: 'Отримано нову оплату: 15,000 грн (Студент: Олег К.)', time: '25 хв тому', type: 'success' as const },
-  { id: 3, text: 'Завершено ТО авто Hyundai ix35 (КА1234ВЕ)', time: '1 год тому', type: 'warning' as const },
+  {
+    id: 1,
+    text: 'Сформовано нову групу «Категорія B - Вечірня»',
+    time: '10 хв тому',
+    type: 'info' as const,
+  },
+  {
+    id: 2,
+    text: 'Отримано нову оплату: 15,000 грн (Студент: Олег К.)',
+    time: '25 хв тому',
+    type: 'success' as const,
+  },
+  {
+    id: 3,
+    text: 'Завершено ТО авто Hyundai ix35 (КА1234ВЕ)',
+    time: '1 год тому',
+    type: 'warning' as const,
+  },
 ];
 
 export const OwnerDashboardPage = () => {

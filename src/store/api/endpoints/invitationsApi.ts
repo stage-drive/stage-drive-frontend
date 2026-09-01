@@ -3,7 +3,7 @@ import type { UserRole } from './authApi';
 
 export interface SendInviteRequest {
   email: string;
-  role: Exclude<UserRole, 'OWNER'>; 
+  role: Exclude<UserRole, 'OWNER'>;
   firstName?: string;
   lastName?: string;
 }
