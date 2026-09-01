@@ -6,10 +6,9 @@ import App from './app/App';
 import './index.css';
 import 'antd/dist/reset.css';
 
-
 (function handleOAuthRedirect() {
   const rawHash = window.location.hash || window.location.search;
-  
+
   if (rawHash) {
     const params = new URLSearchParams(rawHash.replace(/^#/, '').replace(/^\?/, ''));
     const accessToken = params.get('accessToken') || params.get('token');
@@ -30,7 +29,6 @@ import 'antd/dist/reset.css';
     }
   }
 })();
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

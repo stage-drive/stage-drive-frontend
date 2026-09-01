@@ -1,9 +1,16 @@
 import { BaseLayout } from '../BaseLayout';
 import {
-  HomeOutlined, SolutionOutlined, TeamOutlined, BookOutlined,
-  FileTextOutlined, CheckSquareOutlined, BellOutlined, UserOutlined, LogoutOutlined
+  HomeOutlined,
+  SolutionOutlined,
+  TeamOutlined,
+  BookOutlined,
+  FileTextOutlined,
+  CheckSquareOutlined,
+  BellOutlined,
+  UserOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
-import type { MenuProps } from 'antd';  
+import type { MenuProps } from 'antd';
 
 const teacherMenuItems: MenuProps['items'] = [
   { key: '/', icon: <HomeOutlined />, label: 'Головна' },
@@ -14,7 +21,7 @@ const teacherMenuItems: MenuProps['items'] = [
   { key: '/attendance', icon: <CheckSquareOutlined />, label: 'Відвідуваність' },
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
-  { type: 'divider' }, 
+  { type: 'divider' },
   { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];

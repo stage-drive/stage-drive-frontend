@@ -23,8 +23,8 @@ export const LoginForm: React.FC = () => {
       window.dispatchEvent(new Event('auth-change'));
       message.success('Успішний вхід!');
       navigate('/', { replace: true });
-    } catch (err: any) {
-      const rawMessage = err?.data?.message;
+    } catch (err: unknown) {
+      const rawMessage = (err as { data?: { message?: string | string[] } }).data?.message;
 
       let userFriendlyMessage = 'Невірний email або пароль';
 

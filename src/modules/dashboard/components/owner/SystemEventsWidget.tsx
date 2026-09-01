@@ -31,9 +31,7 @@ export const SystemEventsWidget: React.FC<SystemEventsProps> = ({ events }) => (
     <Flex vertical gap="middle">
       {events.map((item) => (
         <Flex key={item.id} align="flex-start" gap="stretch">
-          <div style={{ marginTop: 2 }}>
-            {getEventIcon(item.type)}
-          </div>
+          <div style={{ marginTop: 2 }}>{getEventIcon(item.type)}</div>
           <Flex vertical style={{ flex: 1 }}>
             <Text>{item.text}</Text>
             <Text type="secondary" style={{ fontSize: 12 }}>

@@ -16,11 +16,11 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
+const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions
+) => {
   await mutex.waitForUnlock();
 
   let result = await rawBaseQuery(args, api, extraOptions);
@@ -28,9 +28,8 @@ const baseQueryWithReauth: BaseQueryFn<
   const url = typeof args === 'string' ? args : args.url;
 
   if (result.error && (result.error.status === 401 || result.error.status === 403)) {
-   
     if (url.includes('auth/login') || url.includes('auth/register')) {
-      return result; 
+      return result;
     }
 
     if (result.error.status === 403) {
@@ -38,7 +37,8 @@ const baseQueryWithReauth: BaseQueryFn<
       window.dispatchEvent(
         new CustomEvent('show-auth-error-modal', {
           detail: {
-            message: errorData?.message || 'Акаунт не знайдено. Зверніться до адміністратора за інвайтом.',
+            message:
+              errorData?.message || 'Акаунт не знайдено. Зверніться до адміністратора за інвайтом.',
           },
         })
       );

@@ -30,8 +30,9 @@ export const RegisterForm: React.FC = () => {
       message.success('Реєстрація успішна!');
 
       navigate('/', { replace: true });
-    } catch (err: any) {
-      message.error(err?.data?.message || 'Помилка реєстрації');
+    } catch (err: unknown) {
+      const apiMessage = (err as { data?: { message?: string } }).data?.message;
+      message.error(apiMessage || 'Помилка реєстрації');
     }
   };
 

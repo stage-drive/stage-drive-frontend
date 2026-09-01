@@ -1,10 +1,14 @@
 import type { MenuProps } from 'antd';
 import { BaseLayout } from '../BaseLayout';
 import {
-  HomeOutlined, CalendarOutlined, CarOutlined, TeamOutlined,
-  BellOutlined, UserOutlined, LogoutOutlined
+  HomeOutlined,
+  CalendarOutlined,
+  CarOutlined,
+  TeamOutlined,
+  BellOutlined,
+  UserOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
-
 
 const instructorMenuItems: MenuProps['items'] = [
   { key: '/', icon: <HomeOutlined />, label: 'Головна' },
@@ -12,10 +16,12 @@ const instructorMenuItems: MenuProps['items'] = [
   { key: '/my-car', icon: <CarOutlined />, label: 'Практичні заняття' },
   { key: '/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-  
-  { type: 'divider' }, 
+
+  { type: 'divider' },
   { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
-export const InstructorLayout = () => <BaseLayout roleTitle="Інструктор" menuItems={instructorMenuItems} />;
+export const InstructorLayout = () => (
+  <BaseLayout roleTitle="Інструктор" menuItems={instructorMenuItems} />
+);

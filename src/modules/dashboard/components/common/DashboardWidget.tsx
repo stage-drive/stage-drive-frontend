@@ -3,7 +3,7 @@ import { Card } from 'antd';
 
 interface DashboardWidgetProps {
   title: string;
-  extra?: React.ReactNode; 
+  extra?: React.ReactNode;
   children: React.ReactNode;
   loading?: boolean;
 }

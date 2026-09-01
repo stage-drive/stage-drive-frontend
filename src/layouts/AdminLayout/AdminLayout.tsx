@@ -1,8 +1,17 @@
 import { BaseLayout } from '../BaseLayout';
 import {
-  HomeOutlined, UserOutlined, TeamOutlined, SolutionOutlined,
-  CarOutlined, CalendarOutlined, BookOutlined, FieldBinaryOutlined,
-  GroupOutlined, DollarOutlined, BellOutlined, LogoutOutlined
+  HomeOutlined,
+  UserOutlined,
+  TeamOutlined,
+  SolutionOutlined,
+  CarOutlined,
+  CalendarOutlined,
+  BookOutlined,
+  FieldBinaryOutlined,
+  GroupOutlined,
+  DollarOutlined,
+  BellOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
@@ -18,10 +27,12 @@ const adminMenuItems: MenuProps['items'] = [
   { key: '/topics', icon: <GroupOutlined />, label: 'Теми' },
   { key: '/payments', icon: <DollarOutlined />, label: 'Оплата' },
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
- 
-    { type: 'divider' }, 
-    { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
+
+  { type: 'divider' },
+  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
-export const AdminLayout = () => <BaseLayout roleTitle="Адміністратор" menuItems={adminMenuItems} />;
+export const AdminLayout = () => (
+  <BaseLayout roleTitle="Адміністратор" menuItems={adminMenuItems} />
+);

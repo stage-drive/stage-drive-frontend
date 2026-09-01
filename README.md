@@ -13,9 +13,11 @@
 - [React Router](https://reactrouter.com/)
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
+- [Vitest](https://vitest.dev/)
+- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
 ## Швидкий старт
- 
+
 0. Спочатку клонуйте репозиторій:
 
 ```bash
@@ -45,6 +47,12 @@ npm run build
 ```bash
 npm run lint
 npm run format
+```
+
+5. Запустіть тести:
+
+```bash
+npm test
 ```
 
 ## Структура проєкту
@@ -119,6 +127,27 @@ src/
 └── ...
 ```
 
+```bash
+tests/
+├── setup.ts
+├── test-utils.tsx
+├── app/
+│   └── router/
+│       └── ProtectedRoute.test.tsx
+└── modules/
+    ├── auth/
+    │   └── components/
+    │       ├── LoginForm.test.tsx
+    │       └── RegisterForm.test.tsx
+    └── dashboard/
+        └── components/
+            ├── common/
+            │   ├── StatsCard.test.tsx
+            │   └── DashboardWidget.test.tsx
+            └── owner/
+                └── SystemEventsWidget.test.tsx
+```
+
 ### Як читати цю структуру
 
 - `app/` — базові налаштування проєкту, маршрути, провайдери.
@@ -127,6 +156,7 @@ src/
 - `shared/` — компоненти, типи та утиліти, які використовуються в кількох місцях.
 - `store/` — глобальний стан, Redux slices та API через RTK Query.
 - `styles/` — глобальні стилі та тема застосунку.
+- `tests/` — unit-тести. Структура папок повторює `src/`.
 
 > `layout` відповідає за каркас сторінки, а `module` — за вміст і функціональність.
 
@@ -144,6 +174,21 @@ src/
 - `npm run lint` — перевірка ESLint
 - `npm run format` — форматування Prettier
 - `npm run preview` — попередній перегляд збірки
+- `npm test` — запуск unit-тестів один раз
+- `npm run test:watch` — тести в watch-режимі
+- `npm run test:coverage` — тести зі звітом покриття
+
+## Тестування
+
+Використовується [Vitest](https://vitest.dev/) і [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+
+- Конфігурація — `vite.config.ts`
+- Глобальний setup (jsdom, matchMedia, очищення `localStorage`) — `tests/setup.ts`
+- Рендер із Redux, Ant Design `App` і `MemoryRouter` — `tests/test-utils.tsx`
+
+Тести лежать у `tests/` і повторюють структуру `src/`. Наприклад, `src/modules/auth/components/LoginForm.tsx` → `tests/modules/auth/components/LoginForm.test.tsx`.
+
+Для компонентів із роутером, store або `App.useApp()` використовуйте `renderWithProviders` з `tests/test-utils.tsx`. Для простих UI-компонентів достатньо `render`.
 
 ## Git workflow
 
@@ -171,7 +216,7 @@ src/
 4. Мержаєте його (без апрувів) і чекаєте автоматичного деплою на dev-сервер.
 5. Заходьте на dev-сайт і перевіряєте, що ваш функціонал працює.
 6. Якщо на develop все працює чудово cтворюєте другий Pull Request з цієї ж фіча-гілки у `test`. Мержаєте його в test.
-7. Перевіряєте базовий респонс додатку на test-середовищі і віддаєте задачу тестувальникам (QA). 
+7. Перевіряєте базовий респонс додатку на test-середовищі і віддаєте задачу тестувальникам (QA).
 8. Якщо під час тестування виявили помилку повертаєтесь, якщо баг незначний — ви можете доправити його прямо в поточній фіча-гілці feature/..., а якщо це окрема задача від QA — створюєте нову гілку bugfix/<CLICKUP-ID>-<description> від `main` і проходите той самий шлях (develop -> test -> main)
 9. Коли QA поставили "Approved" (Схвалено) cтворюєте третій Pull Request -> main.
 
@@ -192,10 +237,12 @@ main
 └── ...
 ```
 
-Перед PR рекомендується виконати 
+Перед PR рекомендується виконати
+
 ```bash
 npm run lint
-npm run build.
+npm test
+npm run build
 ```
 
 ### Git cheat sheet

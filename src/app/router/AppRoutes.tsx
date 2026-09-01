@@ -14,7 +14,6 @@ import { TeacherLayout } from '../../layouts/TeacherLayout/TeacherLayout';
 import { InstructorLayout } from '../../layouts/InstructorLayout/InstructorLayout';
 import { StudentLayout } from '../../layouts/StudentLayout/StudentLayout';
 
-
 const HomeRedirect: React.FC<{ userRole?: string }> = ({ userRole }) => {
   if (!userRole) return <Navigate to="/login" replace />;
 
@@ -41,38 +40,42 @@ export const AppRoutes: React.FC = () => {
     return () => window.removeEventListener('auth-change', syncToken);
   }, []);
 
-  const { data: user, isLoading, isFetching, isError } = useGetMeQuery(undefined, {
+  const {
+    data: user,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetMeQuery(undefined, {
     skip: !token,
   });
 
-  useEffect(() => {
-    if (isError) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      setToken(null);
-    }
-  }, [isError]);
+  if (isError && token) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    setToken(null);
+  }
 
   if (token && !user && (isLoading || isFetching)) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <Spin size="large" description="Завантаження..." />
       </div>
     );
   }
 
-
   const userRole = user?.role;
   return (
     <Routes>
       {/* 1. Публічні маршрути */}
-      <Route 
-        path="/login" 
-        element={token && userRole ? <Navigate to="/" replace /> : <LoginPage />} 
+      <Route
+        path="/login"
+        element={token && userRole ? <Navigate to="/" replace /> : <LoginPage />}
       />
-      <Route 
-        path="/register" 
-        element={token && userRole ? <Navigate to="/" replace /> : <RegisterPage />} 
+      <Route
+        path="/register"
+        element={token && userRole ? <Navigate to="/" replace /> : <RegisterPage />}
       />
 
       {/* 2. Кореневий маршрут "/" */}

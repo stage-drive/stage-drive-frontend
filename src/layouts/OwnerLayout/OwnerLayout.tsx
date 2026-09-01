@@ -15,8 +15,8 @@ const ownerMenuItems: MenuProps['items'] = [
   { key: '/admins', icon: <UserSwitchOutlined />, label: 'Адміністратори' },
   { key: '/branches', icon: <BarChartOutlined />, label: 'Філії / Статистика' },
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-  
-  { type: 'divider' }, 
+
+  { type: 'divider' },
   { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: '/school-settings', icon: <BankOutlined />, label: 'Автошкола' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
