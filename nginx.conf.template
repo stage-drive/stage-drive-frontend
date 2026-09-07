@@ -1,5 +1,7 @@
-# Docker DNS: start even if backend is down, re-resolve it after restarts.
-resolver 127.0.0.11 valid=10s ipv6=off;
+# Rendered by the nginx image's envsubst at container start.
+# DNS_RESOLVER: 127.0.0.11 is Docker's embedded DNS (compose).
+# Use a public resolver (e.g. 8.8.8.8) when the backend is outside compose.
+resolver ${DNS_RESOLVER} valid=30s ipv6=off;
 
 server {
     listen 80;
@@ -15,13 +17,17 @@ server {
     gzip_min_length 1024;
     gzip_types text/css text/plain application/javascript application/json image/svg+xml;
 
-    # Variable in proxy_pass forces runtime DNS resolution.
+    # Variable in proxy_pass forces runtime DNS re-resolution, which matters
+    # for managed backends (Cloud Run) whose addresses rotate.
     location /api/ {
-        set $backend http://backend:3000;
+        set $backend "${BACKEND_URL}";
         proxy_pass $backend;
 
+        # Cloud Run routes by Host header and needs SNI.
+        proxy_ssl_server_name on;
+        proxy_set_header Host $proxy_host;
+
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -29,11 +35,13 @@ server {
 
     # Backend-served uploads; DB stores paths like /uploads/avatars/<id>.png.
     location /uploads/ {
-        set $backend_uploads http://backend:3000;
+        set $backend_uploads "${BACKEND_URL}";
         proxy_pass $backend_uploads;
 
+        proxy_ssl_server_name on;
+        proxy_set_header Host $proxy_host;
+
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
