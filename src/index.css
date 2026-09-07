@@ -1,4 +1,11 @@
-body{
+body {
   margin: 0;
   padding: 0;
+}
+
+.ant-menu-dark .ant-menu-item-divider {
+  border-top-width: 2px !important;
+  border-top-color: rgba(255, 255, 255, 0.3) !important;
+  margin-top: 150px !important;
+  margin-bottom: 12px !important;
 }
