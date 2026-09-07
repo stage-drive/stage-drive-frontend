@@ -26,3 +26,20 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Build Docker image
+        run: docker build -t stage-drive-frontend:ci .
+
+      # Catches a broken nginx config, which a successful build alone does not.
+      - name: Smoke test image
+        run: |
+          docker run -d --name ci-smoke -p 8080:80 stage-drive-frontend:ci
+          for i in $(seq 1 15); do
+            curl -fsS -o /dev/null http://localhost:8080/ && break || sleep 2
+          done
+          curl -fsS -o /dev/null -w 'index         %{http_code}\n' http://localhost:8080/
+          curl -fsS -o /dev/null -w 'spa fallback  %{http_code}\n' http://localhost:8080/dashboard
+
+      - name: Container logs on failure
+        if: failure()
+        run: docker logs ci-smoke || true
