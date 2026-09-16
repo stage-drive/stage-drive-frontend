@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
 
+// Same origin as the backend by default: nginx proxies /api in prod,
+// the Vite dev server in dev. Keeps the image environment-agnostic.
 const baseUrl = import.meta.env.VITE_API_URL || '/api';
 const mutex = new Mutex();
 
