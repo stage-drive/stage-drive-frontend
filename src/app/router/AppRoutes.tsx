@@ -13,6 +13,7 @@ import { AdminLayout } from '../../layouts/AdminLayout/AdminLayout';
 import { TeacherLayout } from '../../layouts/TeacherLayout/TeacherLayout';
 import { InstructorLayout } from '../../layouts/InstructorLayout/InstructorLayout';
 import { StudentLayout } from '../../layouts/StudentLayout/StudentLayout';
+import { AdminDashboardPage } from '@/modules/dashboard/pages/AdminDashboardPage.tsx';
 
 const HomeRedirect: React.FC<{ userRole?: string }> = ({ userRole }) => {
   if (!userRole) return <Navigate to="/login" replace />;
@@ -85,7 +86,7 @@ export const AppRoutes: React.FC = () => {
       <Route element={<ProtectedRoute allowedRoles={['OWNER']} userRole={userRole} />}>
         <Route element={<OwnerLayout />}>
           <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
-          <Route path="/admins" element={<div>Управління адміністраторами</div>} />
+          <Route path="/admins" element={<AdminDashboardPage/>} />
           <Route path="/branches" element={<div>Філії та статистика</div>} />
           <Route path="/notifications" element={<div>Сповіщення</div>} />
           <Route path="/profile" element={<div>Профіль власника</div>} />
