@@ -1,18 +1,38 @@
 import { baseApi } from '../baseApi';
-import type { UserRole } from './authApi';
 
 export interface SendInviteRequest {
+  firstName: string;
+  lastName: string;
   email: string;
-  role: Exclude<UserRole, 'OWNER'>;
-  firstName?: string;
-  lastName?: string;
+  phone: string;
+}
+interface SendInviteResponse {
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    role: 'ADMIN';
+    status: 'INVITED';
+    organizationId: string;
+  };
+  invitation: {
+    id: string;
+    email: string;
+    role: 'ADMIN';
+    status: 'PENDING';
+    expiresAt: string;
+    userId: string;
+    organizationId: string;
+  };
 }
 
 export const invitationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    sendInvitation: builder.mutation<void, SendInviteRequest>({
+    sendInvitation: builder.mutation<SendInviteResponse, SendInviteRequest>({
       query: (body) => ({
-        url: 'invitations/send',
+        url: 'invitations',
         method: 'POST',
         body,
       }),
