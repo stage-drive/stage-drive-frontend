@@ -6,6 +6,7 @@ import { useGetMeQuery } from '../../store/api/endpoints/authApi';
 
 import { RegisterPage } from '../../modules/auth/pages/RegisterPage';
 import { LoginPage } from '../../modules/auth/pages/LoginPage';
+import { ForgotPasswordPage } from '../../modules/auth/pages/ForgotPasswordPage';
 import { OwnerDashboardPage } from '../../modules/dashboard/pages/OwnerDashboardPage';
 
 import { OwnerLayout } from '../../layouts/OwnerLayout/OwnerLayout';
@@ -78,6 +79,10 @@ export const AppRoutes: React.FC = () => {
         path="/register"
         element={token && userRole ? <Navigate to="/" replace /> : <RegisterPage />}
       />
+      <Route
+        path="/forgot-password"
+        element={token && userRole ? <Navigate to="/" replace /> : <ForgotPasswordPage />}
+      />
 
       {/* 2. Кореневий маршрут "/" */}
       <Route path="/" element={<HomeRedirect userRole={userRole} />} />
@@ -86,7 +91,7 @@ export const AppRoutes: React.FC = () => {
       <Route element={<ProtectedRoute allowedRoles={['OWNER']} userRole={userRole} />}>
         <Route element={<OwnerLayout />}>
           <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
-          <Route path="/admins" element={<AdminDashboardPage/>} />
+          <Route path="/admins" element={<AdminDashboardPage />} />
           <Route path="/branches" element={<div>Філії та статистика</div>} />
           <Route path="/notifications" element={<div>Сповіщення</div>} />
           <Route path="/profile" element={<div>Профіль власника</div>} />
