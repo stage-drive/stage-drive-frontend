@@ -36,6 +36,10 @@ export interface RegisterRequest {
   termsAccepted: true;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // POST /api/auth/login
@@ -72,6 +76,15 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
 
+    // POST /api/auth/forgot-password
+    forgotPassword: builder.mutation<void, ForgotPasswordRequest>({
+      query: (credentials) => ({
+        url: 'auth/forgot-password',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+
     // POST /api/auth/refresh
     refreshToken: builder.mutation<AuthResponse, { refreshToken?: string } | void>({
       query: (body) => ({
@@ -106,6 +119,7 @@ export const {
   useGetMeQuery,
   useLoginMutation,
   useRegisterMutation,
+  useForgotPasswordMutation,
   useLazyGetMeQuery,
   useRefreshTokenMutation,
   useLogoutMutation,

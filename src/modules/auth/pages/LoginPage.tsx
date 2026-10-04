@@ -5,7 +5,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       style={{
-        padding: '20px',
+        // padding: '20px',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',

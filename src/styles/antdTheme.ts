@@ -42,6 +42,8 @@ export const antdTheme: ThemeConfig = {
       colorPrimaryHover: '#3374FF',
       colorPrimaryActive: '#003ECC',
       borderRadius: 8,
+      controlHeight: 40,
+      controlHeightLG: 40,
     },
 
     // Настройки шапки Layout
@@ -54,6 +56,7 @@ export const antdTheme: ThemeConfig = {
     Input: {
       activeBorderColor: '#0052FF',
       hoverBorderColor: '#3374FF',
+      controlHeight: 40,
     },
   },
 };
