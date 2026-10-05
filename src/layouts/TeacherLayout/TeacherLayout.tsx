@@ -22,8 +22,10 @@ const teacherMenuItems: MenuProps['items'] = [
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
-  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: '/teacher/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
-export const TeacherLayout = () => <BaseLayout roleTitle="Викладач" menuItems={teacherMenuItems} />;
+export const TeacherLayout = () => (
+  <BaseLayout roleTitle="Викладач" menuItems={teacherMenuItems} profilePath="/teacher/profile" />
+);

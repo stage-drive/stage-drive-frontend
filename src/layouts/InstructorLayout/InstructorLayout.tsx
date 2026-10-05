@@ -18,10 +18,14 @@ const instructorMenuItems: MenuProps['items'] = [
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
-  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: '/instructor/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
 export const InstructorLayout = () => (
-  <BaseLayout roleTitle="Інструктор" menuItems={instructorMenuItems} />
+  <BaseLayout
+    roleTitle="Інструктор"
+    menuItems={instructorMenuItems}
+    profilePath="/instructor/profile"
+  />
 );

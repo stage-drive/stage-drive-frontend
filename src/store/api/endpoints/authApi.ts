@@ -8,9 +8,9 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
-  status: 'ACTIVE' | 'PENDING' | 'INACTIVE';
-  phone?: string;
-  avatarUrl?: string;
+  status: 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHIVED';
+  phone?: string | null;
+  avatarUrl?: string | null;
   organizationId: string;
 }
 
@@ -30,7 +30,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
+  phone?: string | null;
   password: string;
   passwordConfirmation: string;
   termsAccepted: true;
@@ -38,6 +38,21 @@ export interface RegisterRequest {
 
 export interface ForgotPasswordRequest {
   email: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  phone?: string | null;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ApiMessageResponse {
+  message: string;
 }
 
 export const authApi = baseApi.injectEndpoints({
@@ -103,6 +118,47 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ['User'],
     }),
 
+    updateMe: builder.mutation<User, UpdateProfileRequest>({
+      query: (body) => ({
+        url: 'users/me',
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    uploadMyAvatar: builder.mutation<User, FormData>({
+      query: (body) => ({
+        url: 'users/me/avatar',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    deleteMyAvatar: builder.mutation<User, void>({
+      query: () => ({
+        url: 'users/me/avatar',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    changeMyPassword: builder.mutation<ApiMessageResponse, ChangePasswordRequest>({
+      query: (body) => ({
+        url: 'users/me/password',
+        method: 'PATCH',
+        body,
+      }),
+    }),
+
+    deleteMe: builder.mutation<void, void>({
+      query: () => ({
+        url: 'users/me',
+        method: 'DELETE',
+      }),
+    }),
+
     // POST /api/auth/logout
     logout: builder.mutation<void, void>({
       query: () => ({
@@ -117,6 +173,11 @@ export const authApi = baseApi.injectEndpoints({
 
 export const {
   useGetMeQuery,
+  useUpdateMeMutation,
+  useUploadMyAvatarMutation,
+  useDeleteMyAvatarMutation,
+  useChangeMyPasswordMutation,
+  useDeleteMeMutation,
   useLoginMutation,
   useRegisterMutation,
   useForgotPasswordMutation,

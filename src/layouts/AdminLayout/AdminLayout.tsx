@@ -7,7 +7,7 @@ import {
   CarOutlined,
   CalendarOutlined,
   BookOutlined,
-  FieldBinaryOutlined,
+  TableOutlined,
   GroupOutlined,
   DollarOutlined,
   BellOutlined,
@@ -23,16 +23,16 @@ const adminMenuItems: MenuProps['items'] = [
   { key: '/cars', icon: <CarOutlined />, label: 'Автопарк' },
   { key: '/schedule', icon: <CalendarOutlined />, label: 'Розклад' },
   { key: '/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
-  { key: '/practice', icon: <FieldBinaryOutlined />, label: 'Практичні заняття' },
+  { key: '/practice', icon: <TableOutlined />, label: 'Практичні заняття' },
   { key: '/topics', icon: <GroupOutlined />, label: 'Теми' },
   { key: '/payments', icon: <DollarOutlined />, label: 'Оплата' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
+  { key: '/admin/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
-  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: '/admin/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
 export const AdminLayout = () => (
-  <BaseLayout roleTitle="Адміністратор" menuItems={adminMenuItems} />
+  <BaseLayout roleTitle="Адміністратор" menuItems={adminMenuItems} routePrefix="/admin" />
 );

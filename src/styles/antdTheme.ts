@@ -30,7 +30,8 @@ export const antdTheme: ThemeConfig = {
     // Настройки Sidebar и Menu
     Menu: {
       darkItemColor: '#ffffff', // Белый цвет неактивных иконок и текста
-      darkItemHoverColor: '#ffffff', // Белый при наведении
+      darkItemHoverColor: '#ffffff',
+      darkItemHoverBg: 'rgba(51, 116, 255, 0.28)',
       darkItemSelectedBg: '#0052FF', // Синий фон активного пункта
       darkItemSelectedColor: '#ffffff', // Белый текст активного пункта
       darkItemBg: 'transparent',
@@ -57,6 +58,97 @@ export const antdTheme: ThemeConfig = {
       activeBorderColor: '#0052FF',
       hoverBorderColor: '#3374FF',
       controlHeight: 40,
+    },
+    // Настройки модальных окон (Modal)
+    Modal: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки уведомлений (Notification)
+    Notification: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки сообщений (Message)
+    Message: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки селекторов (Select)
+    Select: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+      controlHeight: 40,
+    },
+    // Настройки переключателей (Switch)
+    Switch: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки чекбоксов (Checkbox)
+    Checkbox: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки радиокнопок (Radio)
+    Radio: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки прогресс-баров (Progress)
+    Progress: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки слайдеров (Slider)
+    Slider: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки вкладок (Tabs)
+    Tabs: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки таблиц (Table)
+    Table: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки календарей (Calendar)
+    Calendar: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки выпадающих списков (Dropdown)
+    Dropdown: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки тултипов (Tooltip)
+    Tooltip: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки спиннеров (Spin)
+    Spin: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки аватаров (Avatar)
+    Avatar: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки тегов (Tag)
+    Tag: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
+    },
+    // Настройки хлебных крошек (Breadcrumb)
+    Breadcrumb: {
+      colorPrimary: '#0052FF',
+      borderRadius: 8,
     },
   },
 };

@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { renderWithProviders, screen, waitFor } from '../../../test-utils';
+import { fireEvent, renderWithProviders, screen, waitFor } from '../../../test-utils';
 import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 
 const { mockRegister, mockNavigate } = vi.hoisted(() => ({
@@ -28,15 +28,18 @@ async function fillRequiredFields(
   user: ReturnType<typeof userEvent.setup>,
   overrides: { password?: string; confirmation?: string } = {}
 ) {
-  await user.type(screen.getByLabelText('Назва автошколи'), 'Автошкола Драйв');
-  await user.type(screen.getByLabelText("Ім'я"), 'Олександр');
-  await user.type(screen.getByLabelText('Прізвище'), 'Шевченко');
-  await user.type(screen.getByLabelText('Email'), 'owner@example.com');
-  await user.type(screen.getByLabelText('Пароль'), overrides.password ?? 'password123');
-  await user.type(
-    screen.getByLabelText('Підтвердження пароля'),
-    overrides.confirmation ?? 'password123'
-  );
+  fireEvent.change(screen.getByLabelText('Назва автошколи'), {
+    target: { value: 'Автошкола Драйв' },
+  });
+  fireEvent.change(screen.getByLabelText("Ім'я"), { target: { value: 'Олександр' } });
+  fireEvent.change(screen.getByLabelText('Прізвище'), { target: { value: 'Шевченко' } });
+  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
+  fireEvent.change(screen.getByLabelText('Пароль'), {
+    target: { value: overrides.password ?? 'ValidPass123!' },
+  });
+  fireEvent.change(screen.getByLabelText('Підтвердження пароля'), {
+    target: { value: overrides.confirmation ?? 'ValidPass123!' },
+  });
   await user.click(screen.getByRole('checkbox'));
 }
 
@@ -59,8 +62,8 @@ describe('RegisterForm', () => {
     renderWithProviders(<RegisterForm />);
 
     await fillRequiredFields(user, {
-      password: 'password123',
-      confirmation: 'password456',
+      password: 'ValidPass123!',
+      confirmation: 'OtherPass123!',
     });
     await user.click(screen.getByRole('button', { name: 'Зареєструватися' }));
 
@@ -81,6 +84,9 @@ describe('RegisterForm', () => {
 
     renderWithProviders(<RegisterForm />);
     await fillRequiredFields(user);
+    fireEvent.change(screen.getByLabelText("Номер телефону (необов'язково)"), {
+      target: { value: '0501234567' },
+    });
     await user.click(screen.getByRole('button', { name: 'Зареєструватися' }));
 
     await waitFor(() => {
@@ -89,6 +95,7 @@ describe('RegisterForm', () => {
 
     expect(localStorage.getItem('token')).toBe('access-token');
     expect(localStorage.getItem('refreshToken')).toBe('refresh-token');
+    expect(mockRegister).toHaveBeenCalledWith(expect.objectContaining({ phone: '+380501234567' }));
     expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
-  });
+  }, 10000);
 });

@@ -11,7 +11,7 @@ import 'antd/dist/reset.css';
 
   if (rawHash) {
     const params = new URLSearchParams(rawHash.replace(/^#/, '').replace(/^\?/, ''));
-    const accessToken = params.get('accessToken') || params.get('token');
+    const accessToken = params.get('accessToken');
     const refreshToken = params.get('refreshToken');
     const error = params.get('error');
 

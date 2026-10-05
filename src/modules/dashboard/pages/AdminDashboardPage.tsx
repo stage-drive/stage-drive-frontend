@@ -5,6 +5,8 @@ import {
   useSendInvitationMutation,
 } from '@/store/api/endpoints/invitationsApi.ts';
 import AlertMessage from '@/helper/pages/AlertMessage.tsx';
+import { PhoneInput } from '@/shared/components/PhoneInput';
+import { normalizeUkrainianPhone, validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
 
 export const AdminDashboardPage = () => {
   const [invite] = useSendInvitationMutation();
@@ -17,7 +19,11 @@ export const AdminDashboardPage = () => {
 
   const onFinish: FormProps<SendInviteRequest>['onFinish'] = async (values) => {
     try {
-      await invite(values).unwrap();
+      await invite({
+        ...values,
+        phone: normalizeUkrainianPhone(values.phone),
+        role: 'ADMIN',
+      }).unwrap();
       setAlert({
         title: 'Invitation',
         description: 'success sent invitation',
@@ -37,7 +43,6 @@ export const AdminDashboardPage = () => {
   const onFinishFailed: FormProps<SendInviteRequest>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
-
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -69,7 +74,6 @@ export const AdminDashboardPage = () => {
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: 600 }}
-          initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
@@ -101,9 +105,9 @@ export const AdminDashboardPage = () => {
           <Form.Item<SendInviteRequest>
             label="Phone"
             name="phone"
-            rules={[{ required: true, message: 'Please input your phone!' }]}
+            rules={[{ validator: validateUkrainianPhone }]}
           >
-            <Input />
+            <PhoneInput />
           </Form.Item>
 
           <Form.Item label={null}>
