@@ -1,14 +1,13 @@
 import React from 'react';
 import { App, Button, Checkbox, Col, Flex, Form, Input, Row, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  UserOutlined,
-  LockOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  BankOutlined,
-} from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, BankOutlined } from '@ant-design/icons';
 import { useRegisterMutation, type RegisterRequest } from '../../../store/api/endpoints/authApi';
+import { PhoneInput } from '../../../shared/components/PhoneInput';
+import {
+  normalizeUkrainianPhone,
+  validateUkrainianPhone,
+} from '../../../shared/utils/ukrainianPhone';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -21,7 +20,10 @@ export const RegisterForm: React.FC = () => {
 
   const onFinish = async (values: RegisterRequest) => {
     try {
-      const response = await register(values).unwrap();
+      const response = await register({
+        ...values,
+        phone: normalizeUkrainianPhone(values.phone),
+      }).unwrap();
 
       localStorage.setItem('token', response.accessToken);
 
@@ -243,8 +245,9 @@ export const RegisterForm: React.FC = () => {
                 name="phone"
                 label="Номер телефону (необов'язково)"
                 style={{ marginBottom: 12 }}
+                rules={[{ validator: validateUkrainianPhone }]}
               >
-                <Input prefix={<PhoneOutlined />} placeholder="+380XXXXXXXXX" />
+                <PhoneInput />
               </Form.Item>
 
               {/* PASSWORD + CONFIRM PASSWORD */}
@@ -263,7 +266,23 @@ export const RegisterForm: React.FC = () => {
                       },
                       {
                         min: 8,
-                        message: 'Пароль повинен містити щонайменше 8 символів',
+                        message: 'Пароль має містити щонайменше 8 символів',
+                      },
+                      {
+                        pattern: /[A-ZА-ЯІЇЄҐ]/,
+                        message: 'Пароль має містити хоча б одну велику літеру',
+                      },
+                      {
+                        pattern: /[a-zа-яіїєґ]/,
+                        message: 'Пароль має містити хоча б одну малу літеру',
+                      },
+                      {
+                        pattern: /\d/,
+                        message: 'Пароль має містити хоча б одну цифру',
+                      },
+                      {
+                        pattern: /[^A-Za-zА-Яа-яІіЇїЄєҐґ0-9]/,
+                        message: 'Пароль має містити хоча б один спеціальний символ',
                       },
                     ]}
                   >
@@ -331,7 +350,9 @@ export const RegisterForm: React.FC = () => {
               {/* LOGIN */}
 
               <Flex justify="center" style={{ marginTop: 16 }}>
-                <Text type="secondary" style={{ marginRight: 16 }}>Вже маєте акаунт? </Text>
+                <Text type="secondary" style={{ marginRight: 16 }}>
+                  Вже маєте акаунт?{' '}
+                </Text>
                 <Link to="/login">Увійти</Link>
               </Flex>
             </Form>

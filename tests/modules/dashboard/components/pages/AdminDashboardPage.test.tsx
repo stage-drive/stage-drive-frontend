@@ -1,10 +1,8 @@
-import {  screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { AdminDashboardPage } from '@/modules/dashboard/pages/AdminDashboardPage.tsx';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, test, vi } from 'vitest';
 import { renderWithProviders } from '../../../../test-utils.tsx';
-
-
 
 const mockInvite = vi.hoisted(() =>
   vi.fn(() => ({
@@ -16,17 +14,13 @@ vi.mock('@/store/api/endpoints/invitationsApi.ts', () => ({
   useSendInvitationMutation: () => [mockInvite],
 }));
 
-
 describe('AdminDashboardPage', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test('renders Open Modal button', () => {
-    renderWithProviders(
-        <AdminDashboardPage />
-    );
+    renderWithProviders(<AdminDashboardPage />);
 
     expect(screen.getByRole('button', { name: 'Open Modal' })).toBeInTheDocument();
   });
@@ -35,7 +29,6 @@ describe('AdminDashboardPage', () => {
     const user = userEvent.setup();
 
     renderWithProviders(<AdminDashboardPage />);
-
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
@@ -53,7 +46,6 @@ describe('AdminDashboardPage', () => {
 
     renderWithProviders(<AdminDashboardPage />);
 
-
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
@@ -64,14 +56,13 @@ describe('AdminDashboardPage', () => {
 
     expect(await screen.findByText('Please input your email!')).toBeInTheDocument();
 
-    expect(await screen.findByText('Please input your phone!')).toBeInTheDocument();
+    expect(screen.queryByText('Please input your phone!')).not.toBeInTheDocument();
   });
 
   test('sends invitation with form values', async () => {
     const user = userEvent.setup();
 
     renderWithProviders(<AdminDashboardPage />);
-
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
@@ -81,7 +72,7 @@ describe('AdminDashboardPage', () => {
 
     await user.type(screen.getByRole('textbox', { name: 'Email' }), 'eduard@example.com');
 
-    await user.type(screen.getByRole('textbox', { name: 'Phone' }), '+380991234567');
+    await user.type(screen.getByRole('textbox', { name: 'Phone' }), '0501234567');
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -89,7 +80,8 @@ describe('AdminDashboardPage', () => {
       firstName: 'Eduard',
       lastName: 'Bilan',
       email: 'eduard@example.com',
-      phone: '+380991234567',
+      phone: '+380501234567',
+      role: 'ADMIN',
     });
   });
 
@@ -97,7 +89,6 @@ describe('AdminDashboardPage', () => {
     const user = userEvent.setup();
 
     renderWithProviders(<AdminDashboardPage />);
-
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
@@ -123,7 +114,6 @@ describe('AdminDashboardPage', () => {
 
     renderWithProviders(<AdminDashboardPage />);
 
-
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
     await user.type(screen.getByRole('textbox', { name: 'FirstName' }), 'Eduard');
@@ -138,5 +128,4 @@ describe('AdminDashboardPage', () => {
 
     expect(await screen.findByText('error sent invitation')).toBeInTheDocument();
   });
-
 });

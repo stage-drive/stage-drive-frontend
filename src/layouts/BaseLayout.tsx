@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, theme, Badge, Button, Space, type MenuProps } from 'antd';
+import { Layout, Menu, theme, Button, Space, type MenuProps } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
@@ -17,13 +17,22 @@ const { Header, Sider, Content } = Layout;
 interface BaseLayoutProps {
   roleTitle: string;
   menuItems: MenuProps['items'];
+  routePrefix?: string;
+  profilePath?: string;
 }
 
-export const BaseLayout: React.FC<BaseLayoutProps> = ({ roleTitle, menuItems }) => {
+export const BaseLayout: React.FC<BaseLayoutProps> = ({
+  roleTitle,
+  menuItems,
+  routePrefix = '',
+  profilePath: profilePathOverride,
+}) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const notificationsPath = routePrefix ? `${routePrefix}/notifications` : '/notifications';
+  const profilePath = profilePathOverride || (routePrefix ? `${routePrefix}/profile` : '/profile');
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -91,20 +100,51 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({ roleTitle, menuItems }) 
         >
           <span style={{ fontWeight: 600, fontSize: 16 }}>{roleTitle}</span>
           <Space size={16} align="center">
-            <Badge count={1} size="small" offset={[-6, 8]}>
+            <span style={{ position: 'relative', display: 'inline-flex', width: 36, height: 36 }}>
               <Button
                 type="text"
                 shape="circle"
                 icon={<BellOutlined style={{ fontSize: 18 }} />}
-                onClick={() => navigate('/notifications')}
+                onClick={() => navigate(notificationsPath)}
+                style={{
+                  width: 40,
+                  minWidth: 40,
+                  height: 40,
+                  padding: 0,
+                  borderRadius: '50%',
+                  flex: '0 0 40px',
+                }}
+                aria-label="Сповіщення: 1 непрочитане"
               />
-            </Badge>
+              <span
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  top: 1,
+                  right: 1,
+                  display: 'grid',
+                  width: 16,
+                  height: 16,
+                  placeItems: 'center',
+                  border: '2px solid #fff',
+                  borderRadius: '50%',
+                  background: '#ff4d4f',
+                  color: '#fff',
+                  fontSize: 10,
+                  lineHeight: 1,
+                  pointerEvents: 'none',
+                  boxSizing: 'border-box',
+                }}
+              >
+                1
+              </span>
+            </span>
 
             <Button
               type="text"
               shape="circle"
               icon={<UserOutlined style={{ fontSize: 18 }} />}
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate(profilePath)}
             />
           </Space>
         </Header>

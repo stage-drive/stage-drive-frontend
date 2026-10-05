@@ -24,8 +24,10 @@ const studentMenuItems: MenuProps['items'] = [
   { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
-  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: '/student/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
-export const StudentLayout = () => <BaseLayout roleTitle="Студент" menuItems={studentMenuItems} />;
+export const StudentLayout = () => (
+  <BaseLayout roleTitle="Студент" menuItems={studentMenuItems} profilePath="/student/profile" />
+);

@@ -135,7 +135,16 @@ export const LoginForm: React.FC = () => {
               <Form.Item
                 label="Email"
                 name="email"
-                rules={[{ required: true, type: 'email', message: 'Введіть email' }]}
+                 rules={[
+                  {
+                    required: true,
+                    message: 'Будь ласка, введіть Email',
+                  },
+                  {
+                    type: 'email',
+                    message: 'Введіть коректний Email',
+                  },
+                ]}
               >
                 <Input prefix={<MailOutlined />}placeholder="user@example.com" autoComplete="email" />
               </Form.Item>
