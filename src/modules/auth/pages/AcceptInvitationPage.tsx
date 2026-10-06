@@ -272,7 +272,7 @@ export const AcceptInvitationPage: React.FC = () => {
                   Email: <Text strong>{invitation.email}</Text>
                 </Paragraph>
 
-                <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>
+                <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={true}>
                   <Form.Item
                     label="Новий пароль"
                     name="password"
