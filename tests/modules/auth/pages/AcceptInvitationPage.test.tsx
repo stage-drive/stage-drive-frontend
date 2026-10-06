@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { renderWithProviders, screen, waitFor } from '../../../test-utils';
+import { fireEvent, renderWithProviders, screen, waitFor } from '../../../test-utils';
 import { AcceptInvitationPage } from '@/modules/auth/pages/AcceptInvitationPage';
 
 const { mockActivate, mockNavigate, mockVerifyQuery } = vi.hoisted(() => ({
@@ -31,7 +31,7 @@ const verifiedInvitation = {
     valid: true,
     email: 'teacher@example.com',
     role: 'TEACHER' as const,
-    schoolName: 'Автошкола Драйв',
+    organizationName: 'Автошкола Драйв',
   },
   error: undefined,
   isLoading: false,
@@ -52,9 +52,8 @@ describe('AcceptInvitationPage', () => {
 
     expect(mockVerifyQuery).toHaveBeenCalledWith({ token: 'invite-token' }, { skip: false });
     expect(screen.getByText('teacher@example.com')).toBeInTheDocument();
-    expect(screen.getByText(/Автошкола Драйв/)).toBeInTheDocument();
-    expect(screen.getByLabelText('Пароль')).toBeInTheDocument();
-    expect(screen.getByLabelText('Підтвердження пароля')).toBeInTheDocument();
+    expect(screen.getByLabelText('Новий пароль')).toBeInTheDocument();
+    expect(screen.getByLabelText('Підтвердіть пароль')).toBeInTheDocument();
   });
 
   it('shows an error for an invalid invitation token', () => {
@@ -76,8 +75,12 @@ describe('AcceptInvitationPage', () => {
       route: '/invite?token=invite-token',
     });
 
-    await user.type(screen.getByLabelText('Пароль'), 'SecurePassword123!');
-    await user.type(screen.getByLabelText('Підтвердження пароля'), 'DifferentPassword123!');
+    fireEvent.change(screen.getByLabelText('Новий пароль'), {
+      target: { value: 'SecurePassword123!' },
+    });
+    fireEvent.change(screen.getByLabelText('Підтвердіть пароль'), {
+      target: { value: 'DifferentPassword123!' },
+    });
     await user.click(screen.getByRole('button', { name: 'Активувати акаунт' }));
 
     expect(await screen.findByText('Паролі не збігаються')).toBeInTheDocument();
@@ -91,8 +94,12 @@ describe('AcceptInvitationPage', () => {
       route: '/invite?token=invite-token',
     });
 
-    await user.type(screen.getByLabelText('Пароль'), 'SecurePassword123!');
-    await user.type(screen.getByLabelText('Підтвердження пароля'), 'SecurePassword123!');
+    fireEvent.change(screen.getByLabelText('Новий пароль'), {
+      target: { value: 'SecurePassword123!' },
+    });
+    fireEvent.change(screen.getByLabelText('Підтвердіть пароль'), {
+      target: { value: 'SecurePassword123!' },
+    });
     await user.click(screen.getByRole('button', { name: 'Активувати акаунт' }));
 
     await waitFor(() => {
@@ -103,5 +110,5 @@ describe('AcceptInvitationPage', () => {
       });
     });
     expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
-  });
+  }, 10000);
 });

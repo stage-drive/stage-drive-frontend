@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { AdminDashboardPage } from '@/modules/dashboard/pages/AdminDashboardPage.tsx';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, test, vi } from 'vitest';
@@ -66,13 +66,18 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    await user.type(screen.getByRole('textbox', { name: 'FirstName' }), 'Eduard');
-
-    await user.type(screen.getByRole('textbox', { name: 'LastName' }), 'Bilan');
-
-    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'eduard@example.com');
-
-    await user.type(screen.getByRole('textbox', { name: 'Phone' }), '0501234567');
+    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
+      target: { value: 'Eduard' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
+      target: { value: 'Bilan' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
+      target: { value: 'eduard@example.com' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
+      target: { value: '0501234567' },
+    });
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -92,13 +97,18 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    await user.type(screen.getByRole('textbox', { name: 'FirstName' }), 'Eduard');
-
-    await user.type(screen.getByRole('textbox', { name: 'LastName' }), 'Bilan');
-
-    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'eduard@example.com');
-
-    await user.type(screen.getByRole('textbox', { name: 'Phone' }), '+380991234567');
+    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
+      target: { value: 'Eduard' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
+      target: { value: 'Bilan' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
+      target: { value: 'eduard@example.com' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
+      target: { value: '+380991234567' },
+    });
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -116,13 +126,18 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    await user.type(screen.getByRole('textbox', { name: 'FirstName' }), 'Eduard');
-
-    await user.type(screen.getByRole('textbox', { name: 'LastName' }), 'Bilan');
-
-    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'eduard@example.com');
-
-    await user.type(screen.getByRole('textbox', { name: 'Phone' }), '+380991234567');
+    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
+      target: { value: 'Eduard' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
+      target: { value: 'Bilan' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
+      target: { value: 'eduard@example.com' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
+      target: { value: '+380991234567' },
+    });
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 

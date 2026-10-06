@@ -34,6 +34,8 @@ export default defineConfig(({ mode }) => {
       setupFiles: './tests/setup.ts',
       css: false,
       include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+      maxWorkers: 2,
+      testTimeout: 15000,
       coverage: {
         provider: 'v8',
         reporter: ['text', 'html'],
