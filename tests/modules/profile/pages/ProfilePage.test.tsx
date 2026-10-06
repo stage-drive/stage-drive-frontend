@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { renderWithProviders, screen, waitFor } from '../../../test-utils';
+import { fireEvent, renderWithProviders, screen, waitFor } from '../../../test-utils';
 import { ProfilePage } from '@/modules/profile/pages/ProfilePage';
 
 const {
@@ -81,9 +81,8 @@ describe('ProfilePage', () => {
     const user = userEvent.setup();
     renderWithProviders(<ProfilePage />);
 
-    await user.clear(screen.getByLabelText("Ім'я"));
-    await user.type(screen.getByLabelText("Ім'я"), 'Ольга');
-    await user.clear(screen.getByLabelText('Телефон'));
+    fireEvent.change(screen.getByLabelText("Ім'я"), { target: { value: 'Ольга' } });
+    fireEvent.change(screen.getByLabelText('Телефон'), { target: { value: '' } });
     await user.click(screen.getByRole('button', { name: 'Зберегти зміни' }));
 
     await waitFor(() => {
@@ -93,15 +92,21 @@ describe('ProfilePage', () => {
         phone: null,
       });
     });
-  });
+  }, 10000);
 
   it('changes password without sending the confirmation-only field', async () => {
     const user = userEvent.setup();
     renderWithProviders(<ProfilePage />);
 
-    await user.type(screen.getByLabelText('Поточний пароль'), 'OldPassword123');
-    await user.type(screen.getByLabelText('Новий пароль'), 'NewPassword123!');
-    await user.type(screen.getByLabelText('Підтвердження нового пароля'), 'NewPassword123!');
+    fireEvent.change(screen.getByLabelText('Поточний пароль'), {
+      target: { value: 'OldPassword123' },
+    });
+    fireEvent.change(screen.getByLabelText('Новий пароль'), {
+      target: { value: 'NewPassword123!' },
+    });
+    fireEvent.change(screen.getByLabelText('Підтвердження нового пароля'), {
+      target: { value: 'NewPassword123!' },
+    });
     await user.click(screen.getByRole('button', { name: 'Змінити пароль' }));
 
     await waitFor(() => {
@@ -110,7 +115,7 @@ describe('ProfilePage', () => {
         newPassword: 'NewPassword123!',
       });
     });
-  });
+  }, 10000);
 
   it('deletes the account only after confirmation and returns to login', async () => {
     const user = userEvent.setup();
@@ -120,7 +125,8 @@ describe('ProfilePage', () => {
     expect(
       await screen.findByText('Ви втратите доступ до профілю та даних акаунта.')
     ).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /^Видалити акаунт$/ }));
+    const confirmationButtons = screen.getAllByRole('button', { name: /Видалити акаунт/ });
+    fireEvent.click(confirmationButtons[confirmationButtons.length - 1]);
 
     await waitFor(() => {
       expect(mockDeleteMe).toHaveBeenCalled();

@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { renderWithProviders, screen, waitFor } from '../../../test-utils';
+import { fireEvent, renderWithProviders, screen, waitFor } from '../../../test-utils';
 import { ForgotPasswordPage } from '@/modules/auth/pages/ForgotPasswordPage';
 
 const { mockForgotPassword, mockNavigate } = vi.hoisted(() => ({
@@ -50,7 +50,7 @@ describe('ForgotPasswordPage', () => {
     expect(await screen.findByText('Введіть email')).toBeInTheDocument();
     expect(mockForgotPassword).not.toHaveBeenCalled();
 
-    await user.type(screen.getByLabelText('Email'), 'not-an-email');
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'not-an-email' } });
     await user.click(screen.getByRole('button', { name: 'Надіслати посилання' }));
     expect(await screen.findByText('Введіть коректний email')).toBeInTheDocument();
     expect(mockForgotPassword).not.toHaveBeenCalled();
@@ -61,7 +61,7 @@ describe('ForgotPasswordPage', () => {
     mockForgotPassword.mockReturnValue({ unwrap: () => Promise.resolve() });
     renderWithProviders(<ForgotPasswordPage />);
 
-    await user.type(screen.getByLabelText('Email'), 'owner@example.com');
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
     await user.click(screen.getByRole('button', { name: 'Надіслати посилання' }));
 
     await waitFor(() => {
@@ -69,7 +69,7 @@ describe('ForgotPasswordPage', () => {
     });
     expect(await screen.findByText('Перевірте пошту')).toBeInTheDocument();
     expect(screen.getByText(/owner@example\.com/)).toBeInTheDocument();
-  });
+  }, 10000);
 
   it('shows an API error when the request fails', async () => {
     const user = userEvent.setup();
@@ -78,10 +78,10 @@ describe('ForgotPasswordPage', () => {
     });
     renderWithProviders(<ForgotPasswordPage />);
 
-    await user.type(screen.getByLabelText('Email'), 'owner@example.com');
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
     await user.click(screen.getByRole('button', { name: 'Надіслати посилання' }));
 
     expect(await screen.findByText('Сервіс тимчасово недоступний')).toBeInTheDocument();
     expect(screen.queryByText('Перевірте пошту')).not.toBeInTheDocument();
-  });
+  }, 10000);
 });

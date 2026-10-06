@@ -1,7 +1,7 @@
 import React from 'react';
 import { App, Button, Col, Divider, Flex, Form, Input, Row, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { MailOutlined, LockOutlined  } from '@ant-design/icons';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import { useLoginMutation, type LoginRequest } from '../../../store/api/endpoints/authApi';
 import { GoogleLoginButton } from './GoogleLoginButton';
 
@@ -135,10 +135,10 @@ export const LoginForm: React.FC = () => {
               <Form.Item
                 label="Email"
                 name="email"
-                 rules={[
+                rules={[
                   {
                     required: true,
-                    message: 'Будь ласка, введіть Email',
+                    message: 'Введіть email',
                   },
                   {
                     type: 'email',
@@ -146,7 +146,11 @@ export const LoginForm: React.FC = () => {
                   },
                 ]}
               >
-                <Input prefix={<MailOutlined />}placeholder="user@example.com" autoComplete="email" />
+                <Input
+                  prefix={<MailOutlined />}
+                  placeholder="user@example.com"
+                  autoComplete="email"
+                />
               </Form.Item>
 
               <Form.Item
@@ -154,7 +158,11 @@ export const LoginForm: React.FC = () => {
                 name="password"
                 rules={[{ required: true, message: 'Введіть пароль' }]}
               >
-                <Input.Password prefix={<LockOutlined />} placeholder="Пароль" autoComplete="current-password" />
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Пароль"
+                  autoComplete="current-password"
+                />
               </Form.Item>
 
               <Flex justify="flex-end" style={{ marginBottom: 16 }}>
