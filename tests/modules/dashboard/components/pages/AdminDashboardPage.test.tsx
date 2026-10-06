@@ -7,7 +7,7 @@ import { renderWithProviders } from '../../../../test-utils.tsx';
 const mockInvite = vi.hoisted(() =>
   vi.fn(() => ({
     unwrap: vi.fn().mockResolvedValue({}),
-  }))
+  })),
 );
 
 vi.mock('@/store/api/endpoints/invitationsApi.ts', () => ({
@@ -22,7 +22,9 @@ describe('AdminDashboardPage', () => {
   test('renders Open Modal button', () => {
     renderWithProviders(<AdminDashboardPage />);
 
-    expect(screen.getByRole('button', { name: 'Open Modal' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Open Modal' }),
+    ).toBeInTheDocument();
   });
 
   test('shows invitation form when modal is opened', async () => {
@@ -32,13 +34,21 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    expect(screen.getByRole('textbox', { name: 'FirstName' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'FirstName' }),
+    ).toBeInTheDocument();
 
-    expect(screen.getByRole('textbox', { name: 'LastName' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'LastName' }),
+    ).toBeInTheDocument();
 
-    expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Email' }),
+    ).toBeInTheDocument();
 
-    expect(screen.getByRole('textbox', { name: 'Phone' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Phone' }),
+    ).toBeInTheDocument();
   });
 
   test('shows validation errors when submitting empty form', async () => {
@@ -50,13 +60,21 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(await screen.findByText('Please input your firstName!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Please input your firstName!'),
+    ).toBeInTheDocument();
 
-    expect(await screen.findByText('Please input your lastName!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Please input your lastName!'),
+    ).toBeInTheDocument();
 
-    expect(await screen.findByText('Please input your email!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Please input your email!'),
+    ).toBeInTheDocument();
 
-    expect(screen.queryByText('Please input your phone!')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Please input your phone!'),
+    ).not.toBeInTheDocument();
   });
 
   test('sends invitation with form values', async () => {
@@ -66,18 +84,33 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
-      target: { value: 'Eduard' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
-      target: { value: 'Bilan' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
-      target: { value: 'eduard@example.com' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
-      target: { value: '0501234567' },
-    });
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'FirstName' }),
+      {
+        target: { value: 'Eduard' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'LastName' }),
+      {
+        target: { value: 'Bilan' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Email' }),
+      {
+        target: { value: 'eduard@example.com' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Phone' }),
+      {
+        target: { value: '0501234567' },
+      },
+    );
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -97,22 +130,39 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
-      target: { value: 'Eduard' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
-      target: { value: 'Bilan' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
-      target: { value: 'eduard@example.com' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
-      target: { value: '+380991234567' },
-    });
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'FirstName' }),
+      {
+        target: { value: 'Eduard' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'LastName' }),
+      {
+        target: { value: 'Bilan' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Email' }),
+      {
+        target: { value: 'eduard@example.com' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Phone' }),
+      {
+        target: { value: '+380991234567' },
+      },
+    );
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(await screen.findByText('success sent invitation')).toBeInTheDocument();
+    expect(
+      await screen.findByText('success sent invitation'),
+    ).toBeInTheDocument();
   });
 
   test('shows error message when invitation request fails', async () => {
@@ -126,21 +176,38 @@ describe('AdminDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Modal' }));
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'FirstName' }), {
-      target: { value: 'Eduard' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'LastName' }), {
-      target: { value: 'Bilan' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), {
-      target: { value: 'eduard@example.com' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone' }), {
-      target: { value: '+380991234567' },
-    });
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'FirstName' }),
+      {
+        target: { value: 'Eduard' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'LastName' }),
+      {
+        target: { value: 'Bilan' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Email' }),
+      {
+        target: { value: 'eduard@example.com' },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Phone' }),
+      {
+        target: { value: '+380991234567' },
+      },
+    );
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(await screen.findByText('error sent invitation')).toBeInTheDocument();
+    expect(
+      await screen.findByText('error sent invitation'),
+    ).toBeInTheDocument();
   });
 });
