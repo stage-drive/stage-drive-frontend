@@ -298,7 +298,6 @@ export const InviteMemberPage: React.FC = () => {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          requiredMark={false}
           style={{ marginTop: 24 }}
         >
           <Form.Item
