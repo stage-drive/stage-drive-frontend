@@ -36,22 +36,29 @@ describe('InviteMemberPage', () => {
     });
   });
 
-  it('renders the users list and opens the invitation form from the add button', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<InviteMemberPage />);
+ it('renders the users list and opens the invitation form from the add button', async () => {
+  const user = userEvent.setup();
+  renderWithProviders(<InviteMemberPage />);
 
-    expect(screen.getByRole('heading', { name: 'Користувачі' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Додати учасника/ }));
-    await user.click(screen.getByRole('combobox', { name: 'Роль' }));
+  expect(screen.getByRole('heading', { name: 'Користувачі' })).toBeInTheDocument();
 
-    expect(screen.getByText('Викладач')).toBeInTheDocument();
-    expect(screen.getByText('Інструктор')).toBeInTheDocument();
-    expect(screen.getByText('Студент')).toBeInTheDocument();
-    expect(screen.getByLabelText("Ім'я та по-батькові")).toBeInTheDocument();
-    expect(screen.getByLabelText('Прізвище')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Номер телефону')).toBeInTheDocument();
-  }, 10000);
+  // 1. Открываем модалку
+  await user.click(screen.getByRole('button', { name: /Додати учасника/ }));
+
+  // 2. Нажимаем на селект выбора роли
+  const roleCombobox = await screen.findByRole('combobox', { name: 'Роль' });
+  await user.click(roleCombobox);
+
+  // 3. Проверяем только те роли, которые ЕСТЬ в селекте (Викладач и Інструктор)
+  expect(await screen.findByText('Викладач')).toBeInTheDocument();
+  expect(await screen.findByText('Інструктор')).toBeInTheDocument();
+
+  // 4. Проверяем инпуты формы
+  expect(screen.getByLabelText("Ім'я та по-батькові")).toBeInTheDocument();
+  expect(screen.getByLabelText('Прізвище')).toBeInTheDocument();
+  expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  expect(screen.getByLabelText('Номер телефону')).toBeInTheDocument();
+}, 10000);
 
   it('shows invitation records returned from the API', () => {
     mockGetInvitations.mockReturnValue({

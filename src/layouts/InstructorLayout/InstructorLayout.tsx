@@ -11,11 +11,11 @@ import {
 } from '@ant-design/icons';
 
 const instructorMenuItems: MenuProps['items'] = [
-  { key: '/', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/schedule', icon: <CalendarOutlined />, label: 'Мій розклад' },
-  { key: '/my-car', icon: <CarOutlined />, label: 'Практичні заняття' },
-  { key: '/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
+  { key: '/instructor/dashboard', icon: <HomeOutlined />, label: 'Головна' },
+  { key: '/instructor/schedule', icon: <CalendarOutlined />, label: 'Мій розклад' },
+  { key: '/instructor/my-car', icon: <CarOutlined />, label: 'Практичні заняття' },
+  { key: '/instructor/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
+  { key: '/instructor/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
   { key: '/instructor/profile', icon: <UserOutlined />, label: 'Профіль' },

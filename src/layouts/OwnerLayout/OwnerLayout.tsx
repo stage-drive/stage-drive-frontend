@@ -11,19 +11,19 @@ import {
 import type { MenuProps } from 'antd';
 
 const ownerMenuItems: MenuProps['items'] = [
-  { key: '/', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/admins', icon: <UserSwitchOutlined />, label: 'Адміністратори' },
-  { key: '/branches', icon: <BarChartOutlined />, label: 'Філії / Статистика' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
+  { key: '/owner/dashboard', icon: <HomeOutlined />, label: 'Головна' },
+  { key: '/owner/admins', icon: <UserSwitchOutlined />, label: 'Адміністратори' },
+  { key: '/owner/branches', icon: <BarChartOutlined />, label: 'Філії / Статистика' },
+  { key: '/owner/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
-  { key: '/profile', icon: <UserOutlined />, label: 'Профіль' },
-  { key: '/school-settings', icon: <BankOutlined />, label: 'Автошкола' },
+  { key: '/owner/profile', icon: <UserOutlined />, label: 'Профіль' },
+  { key: '/owner/school-settings', icon: <BankOutlined />, label: 'Автошкола' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 
 export const OwnerLayout: React.FC = () => (
-  <BaseLayout roleTitle="Панель Власника" menuItems={ownerMenuItems} />
+  <BaseLayout roleTitle="Панель Власника" menuItems={ownerMenuItems} routePrefix="/owner" />
 );
 
 export default OwnerLayout;

@@ -1,17 +1,15 @@
 import { Alert, Col, Flex, Row, Skeleton, Space, Typography } from 'antd';
-import { TeamOutlined, UserSwitchOutlined, BookOutlined, CarOutlined } from '@ant-design/icons';
-import { StatsCard } from '../components/common/StatsCard';
+import { TeamOutlined, SolutionOutlined, CarOutlined, MailOutlined } from '@ant-design/icons';
 import { DashboardWidget } from '../components/common/DashboardWidget';
-import { useGetOwnerDashboardQuery } from '../../../store/api/endpoints/dashboardApi';
+import { StatsCard } from '../components/common/StatsCard';
+import { useGetAdminDashboardQuery } from '../../../store/api/endpoints/dashboardApi';
 
 const { Title, Text } = Typography;
 
-export const OwnerDashboardPage = () => {
-  const { data, isLoading, isError, refetch } = useGetOwnerDashboardQuery();
+export const AdminOverviewDashboardPage = () => {
+  const { data, isLoading, isError, refetch } = useGetAdminDashboardQuery();
 
-  if (isLoading) {
-    return <Skeleton active paragraph={{ rows: 6 }} />;
-  }
+  if (isLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
   if (isError || !data) {
     return (
@@ -30,29 +28,21 @@ export const OwnerDashboardPage = () => {
         <Title level={2} style={{ margin: 0 }}>
           {data.organization.name}
         </Title>
-        <Text type="secondary">Загальний огляд автошколи</Text>
+        <Text type="secondary">Операційний огляд автошколи</Text>
       </Flex>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
+          <StatsCard title="Студенти" value={data.users.byRole.STUDENT} icon={<TeamOutlined />} />
+        </Col>
+        <Col xs={24} sm={12} lg={8}>
           <StatsCard
-            title="Адміністратори"
-            value={data.users.byRole.ADMIN}
-            icon={<UserSwitchOutlined />}
+            title="Викладачі"
+            value={data.users.byRole.TEACHER}
+            icon={<SolutionOutlined />}
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatsCard
-            title="Студенти"
-            value={data.users.byRole.STUDENT}
-            icon={<TeamOutlined />}
-            color="#0052FF"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatsCard title="Викладачі" value={data.users.byRole.TEACHER} icon={<BookOutlined />} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <StatsCard
             title="Інструктори"
             value={data.users.byRole.INSTRUCTOR}
@@ -63,7 +53,7 @@ export const OwnerDashboardPage = () => {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <DashboardWidget title="Користувачі автошколи">
+          <DashboardWidget title="Статус учасників">
             <Flex justify="space-between">
               <Text>Всього</Text>
               <Text strong>{data.users.total}</Text>
@@ -80,21 +70,21 @@ export const OwnerDashboardPage = () => {
               <Text>Заблоковані</Text>
               <Text strong>{data.users.byStatus.BLOCKED}</Text>
             </Flex>
-            <Flex justify="space-between">
-              <Text>Архівні</Text>
-              <Text strong>{data.users.byStatus.ARCHIVED}</Text>
-            </Flex>
           </DashboardWidget>
         </Col>
         <Col xs={24} md={12}>
           <DashboardWidget title="Запрошення">
-            <Flex justify="space-between">
-              <Text>Очікують активації</Text>
-              <Text strong>{data.invitations.pending}</Text>
+            <Flex align="center" gap={8}>
+              <MailOutlined />
+              <Text>
+                Очікують активації: <Text strong>{data.invitations.pending}</Text>
+              </Text>
             </Flex>
-            <Flex justify="space-between">
-              <Text>Прострочені</Text>
-              <Text strong>{data.invitations.expired}</Text>
+            <Flex align="center" gap={8}>
+              <MailOutlined />
+              <Text>
+                Прострочені: <Text strong>{data.invitations.expired}</Text>
+              </Text>
             </Flex>
           </DashboardWidget>
         </Col>

@@ -40,6 +40,12 @@ export interface ForgotPasswordRequest {
   email: string;
 }
 
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
 export interface UpdateProfileRequest {
   firstName?: string;
   lastName?: string;
@@ -97,6 +103,15 @@ export const authApi = baseApi.injectEndpoints({
         url: 'auth/forgot-password',
         method: 'POST',
         body: credentials,
+      }),
+    }),
+
+    // POST /api/auth/reset-password
+    resetPassword: builder.mutation<void, ResetPasswordRequest>({
+      query: (payload) => ({
+        url: 'auth/reset-password',
+        method: 'POST',
+        body: payload,
       }),
     }),
 
@@ -181,6 +196,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useForgotPasswordMutation,
+  useResetPasswordMutation,
   useLazyGetMeQuery,
   useRefreshTokenMutation,
   useLogoutMutation,

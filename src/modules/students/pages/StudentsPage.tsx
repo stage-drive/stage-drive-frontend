@@ -1,38 +1,55 @@
 import React, { useState } from 'react';
-import { Alert, App, Form } from 'antd';
+import { Alert, App, Button, Flex, Form, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import {
-  useGetInvitationsQuery,
   useCancelInvitationMutation,
+  useGetInvitationsQuery,
   useResendInvitationMutation,
-  useSendMemberInvitationMutation,
-  type SendMemberInviteRequest,
 } from '../../../store/api/endpoints/invitationsApi';
 import { normalizeUkrainianPhone } from '../../../shared/utils/ukrainianPhone';
-import { InvitationPageHeader } from '../components/InvitationPageHeader';
-import { InvitationTable } from '../components/InvitationTable';
-import { InviteMemberFormModal } from '../components/InviteMemberFormModal';
+import { useCreateStudentMutation } from '../../../store/api/endpoints/studentsApi';
+import {
+  InviteMemberFormModal,
+  type StudentInviteFormValues,
+} from '../../users/components/InviteMemberFormModal';
+import { InvitationTable } from '../../users/components/InvitationTable';
 
-export const InviteMemberPage: React.FC = () => {
-  const [form] = Form.useForm<SendMemberInviteRequest>();
+const { Title, Paragraph } = Typography;
+
+export const StudentsPage: React.FC = () => {
+  const [form] = Form.useForm<StudentInviteFormValues>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancellingInvitationId, setCancellingInvitationId] = useState<string | null>(null);
   const [resendingInvitationId, setResendingInvitationId] = useState<string | null>(null);
-  const [sendInvitation, { isLoading: isSending }] = useSendMemberInvitationMutation();
+
+  const [createStudent, { isLoading: isSending }] = useCreateStudentMutation();
   const [cancelInvitation, { isLoading: isCancelling }] = useCancelInvitationMutation();
   const [resendInvitation, { isLoading: isResending }] = useResendInvitationMutation();
-  const {
-    data: invitations = [],
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  } = useGetInvitationsQuery();
+
+  const { data: invitations = [], isLoading, error } = useGetInvitationsQuery();
+
+  const studentInvitations = invitations.filter((invitation) => invitation.role === 'STUDENT');
   const { message, modal } = App.useApp();
 
-  const onFinish = async (values: SendMemberInviteRequest) => {
+  const openAddStudentModal = () => {
+    form.resetFields();
+    form.setFieldValue('role', 'STUDENT');
+    setIsModalOpen(true);
+  };
+
+  const onFinish = async (values: StudentInviteFormValues) => {
     try {
-      await sendInvitation({ ...values, phone: normalizeUkrainianPhone(values.phone) }).unwrap();
-      message.success('Запрошення успішно створено');
+      await createStudent({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone ? normalizeUkrainianPhone(values.phone) : undefined,
+        groupId: values.groupId || undefined,
+        category: values.category as 'A' | 'B' | 'C' | 'D' | 'BE' | 'CE' | 'DE' | undefined,
+        transmission: values.transmission as 'MANUAL' | 'AUTOMATIC' | undefined,
+      }).unwrap();
+
+      message.success('Студента успішно створено і запрошення надіслано');
       setIsModalOpen(false);
       form.resetFields();
     } catch (error: unknown) {
@@ -40,7 +57,7 @@ export const InviteMemberPage: React.FC = () => {
       message.error(
         Array.isArray(apiMessage)
           ? apiMessage.join(', ')
-          : apiMessage || 'Не вдалося надіслати запрошення'
+          : apiMessage || 'Не вдалося надіслати запрошення студенту'
       );
     }
   };
@@ -82,7 +99,7 @@ export const InviteMemberPage: React.FC = () => {
   const confirmResendInvitation = (invitationId: string) => {
     modal.confirm({
       title: 'Надіслати запрошення повторно?',
-      content: 'Для запрошення буде створено нове посилання, а попереднє перестане діяти.',
+      content: 'Для студента буде створено нове посилання, а попереднє перестане діяти.',
       okText: 'Надіслати',
       cancelText: 'Не надсилати',
       onOk: () => onResendInvitation(invitationId),
@@ -91,8 +108,8 @@ export const InviteMemberPage: React.FC = () => {
 
   const confirmCancelInvitation = (invitationId: string) => {
     modal.confirm({
-      title: 'Скасувати це запрошення?',
-      content: 'Посилання з листа більше не можна буде використати.',
+      title: 'Скасувати запрошення для студента?',
+      content: 'Посилання в листі більше не можна буде використати.',
       okText: 'Скасувати',
       cancelText: 'Залишити',
       okButtonProps: { danger: true },
@@ -102,23 +119,31 @@ export const InviteMemberPage: React.FC = () => {
 
   return (
     <section>
-      <InvitationPageHeader
-        isFetching={isFetching}
-        onRefresh={() => void refetch()}
-        onAddInvitation={() => setIsModalOpen(true)}
-      />
+      <Flex align="center" justify="space-between" wrap gap={16}>
+        <div>
+          <Title level={2} style={{ margin: 0 }}>
+            Студенти
+          </Title>
+          <Paragraph type="secondary" style={{ margin: '8px 0 0' }}>
+            Додавання нового студента з автоматичним запрошенням до активації акаунта
+          </Paragraph>
+        </div>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openAddStudentModal}>
+          Додати студента
+        </Button>
+      </Flex>
 
       {error && (
         <Alert
           type="error"
           showIcon
-          message="Не вдалося завантажити список користувачів"
+          message="Не вдалося завантажити список студентів"
           style={{ marginTop: 24 }}
         />
       )}
 
       <InvitationTable
-        invitations={invitations}
+        invitations={studentInvitations}
         isLoading={isLoading}
         isResending={isResending}
         resendingInvitationId={resendingInvitationId}
@@ -132,11 +157,16 @@ export const InviteMemberPage: React.FC = () => {
         open={isModalOpen}
         form={form}
         isSending={isSending}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          form.resetFields();
+          setIsModalOpen(false);
+        }}
         onSubmit={onFinish}
+        hideRole
+        showStudentFields
       />
     </section>
   );
 };
 
-export default InviteMemberPage;
+export default StudentsPage;
