@@ -72,4 +72,17 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Owner home')).toBeInTheDocument();
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument();
   });
+
+  it('allows access when the stored role is lowercase', () => {
+    localStorage.setItem('token', 'test-token');
+
+    renderProtectedRoute({
+      route: '/admin/dashboard',
+      allowedRoles: ['ADMIN'],
+      userRole: 'admin' as any,
+    });
+
+    expect(screen.getByText('Protected content')).toBeInTheDocument();
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument();
+  });
 });

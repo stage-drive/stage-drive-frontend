@@ -1,4 +1,5 @@
 import { Button, Form, type FormProps, Input, Modal } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import {
   type SendInviteRequest,
@@ -59,8 +60,8 @@ export const AdminDashboardPage = () => {
       {alert && (
         <AlertMessage description={alert.description} title={alert.title} type={alert.type} />
       )}
-      <Button type="primary" onClick={showModal}>
-        Open Modal
+      <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
+        Додати адміністратора
       </Button>
       <Modal
         title="Basic Modal"

@@ -118,7 +118,7 @@ export const invitationsApi = baseApi.injectEndpoints({
         body,
       }),
       // Інвалідує весь список -> викликає авто-рефеч getInvitations
-      invalidatesTags: ['User', { type: 'Invitations', id: 'LIST' }],
+      invalidatesTags: ['User', 'Dashboard', { type: 'Invitations', id: 'LIST' }],
     }),
 
     // Перевірити токен перед активацією (Public)
@@ -146,7 +146,7 @@ export const invitationsApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['User', { type: 'Invitations', id: 'LIST' }],
+      invalidatesTags: ['User', 'Dashboard', { type: 'Invitations', id: 'LIST' }],
     }),
 
     // Скасувати запрошення (Auth)
@@ -159,6 +159,7 @@ export const invitationsApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         { type: 'Invitations', id },
         { type: 'Invitations', id: 'LIST' },
+        'Dashboard',
       ],
     }),
 
@@ -170,6 +171,7 @@ export const invitationsApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         { type: 'Invitations', id },
         { type: 'Invitations', id: 'LIST' },
+        'Dashboard',
       ],
     }),
   }),

@@ -13,13 +13,13 @@ import {
 import type { MenuProps } from 'antd';
 
 const teacherMenuItems: MenuProps['items'] = [
-  { key: '/', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/my-groups', icon: <SolutionOutlined />, label: 'Мої групи' },
-  { key: '/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
-  { key: '/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
-  { key: '/tests', icon: <FileTextOutlined />, label: 'Тести' },
-  { key: '/attendance', icon: <CheckSquareOutlined />, label: 'Відвідуваність' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
+  { key: '/teacher/dashboard', icon: <HomeOutlined />, label: 'Головна' },
+  { key: '/teacher/my-groups', icon: <SolutionOutlined />, label: 'Мої групи' },
+  { key: '/teacher/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
+  { key: '/teacher/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
+  { key: '/teacher/tests', icon: <FileTextOutlined />, label: 'Тести' },
+  { key: '/teacher/attendance', icon: <CheckSquareOutlined />, label: 'Відвідуваність' },
+  { key: '/teacher/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
   { key: '/teacher/profile', icon: <UserOutlined />, label: 'Профіль' },

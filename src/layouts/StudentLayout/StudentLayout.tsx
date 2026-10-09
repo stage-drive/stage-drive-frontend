@@ -14,14 +14,14 @@ import {
 import type { MenuProps } from 'antd';
 
 const studentMenuItems: MenuProps['items'] = [
-  { key: '/', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/schedule', icon: <CalendarOutlined />, label: 'Мій розклад' },
-  { key: '/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
-  { key: '/tests', icon: <FileTextOutlined />, label: 'Тести' },
-  { key: '/practice', icon: <CarOutlined />, label: 'Практичні заняття' },
-  { key: '/progress', icon: <RiseOutlined />, label: 'Мій прогрес' },
-  { key: '/payments', icon: <DollarOutlined />, label: 'Оплати' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
+  { key: '/student/dashboard', icon: <HomeOutlined />, label: 'Головна' },
+  { key: '/student/schedule', icon: <CalendarOutlined />, label: 'Мій розклад' },
+  { key: '/student/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
+  { key: '/student/tests', icon: <FileTextOutlined />, label: 'Тести' },
+  { key: '/student/practice', icon: <CarOutlined />, label: 'Практичні заняття' },
+  { key: '/student/progress', icon: <RiseOutlined />, label: 'Мій прогрес' },
+  { key: '/student/payments', icon: <DollarOutlined />, label: 'Оплати' },
+  { key: '/student/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
 
   { type: 'divider' },
   { key: '/student/profile', icon: <UserOutlined />, label: 'Профіль' },
