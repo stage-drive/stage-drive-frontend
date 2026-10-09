@@ -60,7 +60,7 @@ export const AdminDashboardPage = () => {
       {alert && (
         <AlertMessage description={alert.description} title={alert.title} type={alert.type} />
       )}
-      <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={showModal} aria-label="Open Modal">
         Додати адміністратора
       </Button>
       <Modal

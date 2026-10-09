@@ -28,6 +28,9 @@ vi.mock('react-router-dom', async (importOriginal) => {
 describe('ResetPasswordPage', () => {
   beforeEach(() => {
     mockResetPassword.mockReset();
+    mockResetPassword.mockImplementation(() => ({
+      unwrap: () => Promise.resolve({ success: true }),
+    }));
     mockNavigate.mockReset();
   });
 
@@ -50,19 +53,20 @@ describe('ResetPasswordPage', () => {
 
   it('submits the new password and calls the reset API', async () => {
     const user = userEvent.setup();
-    mockResetPassword.mockReturnValue({ unwrap: () => Promise.resolve() });
+    const validPassword = 'NewPassword123!';
 
     renderWithProviders(<ResetPasswordPage />);
 
-    await user.type(screen.getByPlaceholderText('Введіть новий пароль'), 'newPassword123');
-    await user.type(screen.getByPlaceholderText('Повторіть новий пароль'), 'newPassword123');
+    await user.type(screen.getByPlaceholderText('Введіть новий пароль'), validPassword);
+    await user.type(screen.getByPlaceholderText('Повторіть новий пароль'), validPassword);
+    
     await user.click(screen.getByRole('button', { name: 'Змінити пароль' }));
 
     await waitFor(() => {
       expect(mockResetPassword).toHaveBeenCalledWith({
         token: 'test-token',
-        password: 'newPassword123',
-        passwordConfirmation: 'newPassword123',
+        password: validPassword,
+        passwordConfirmation: validPassword,
       });
     });
   });
