@@ -1,123 +1,104 @@
-import { Button, Form, type FormProps, Input, Modal } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import {
-  type SendInviteRequest,
-  useSendInvitationMutation,
-} from '@/store/api/endpoints/invitationsApi.ts';
-import AlertMessage from '@/helper/pages/AlertMessage.tsx';
-import { PhoneInput } from '@/shared/components/PhoneInput';
-import { normalizeUkrainianPhone, validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
+import { Alert, Button, Flex, Row, Statistic, Typography } from 'antd';
+import { CarOutlined, SolutionOutlined, TeamOutlined } from '@ant-design/icons';
+import { DashboardCol } from '@/modules/dashboard/components/DashboardCol';
+import { DashboardPageSkeleton } from '@/modules/dashboard/components/DashboardPageSkeleton';
+import { DashboardWidget } from '@/modules/dashboard/components/DashboardWidget';
+import { MetricList } from '@/modules/dashboard/components/MetricList';
+import { StatsCard } from '@/modules/dashboard/components/StatsCard';
+import { OrganizationLogo } from '@/modules/organization/components/OrganizationLogo';
+import { useGetAdminDashboardQuery } from '@/store/api/endpoints/dashboardApi';
+
+const { Title, Text } = Typography;
 
 export const AdminDashboardPage = () => {
-  const [invite] = useSendInvitationMutation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [alert, setAlert] = useState<{
-    title: string;
-    description: string;
-    type: 'success' | 'error';
-  } | null>(null);
+  const { data, isLoading, isError, refetch } = useGetAdminDashboardQuery();
 
-  const onFinish: FormProps<SendInviteRequest>['onFinish'] = async (values) => {
-    try {
-      await invite({
-        ...values,
-        phone: normalizeUkrainianPhone(values.phone),
-        role: 'ADMIN',
-      }).unwrap();
-      setAlert({
-        title: 'Invitation',
-        description: 'success sent invitation',
-        type: 'success',
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Failed to send invitation:', error);
-      setAlert({
-        title: 'Invitation',
-        description: 'error sent invitation',
-        type: 'error',
-      });
-    }
-  };
+  if (isLoading) return <DashboardPageSkeleton cards={3} />;
 
-  const onFinishFailed: FormProps<SendInviteRequest>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
+  if (isError || !data) {
+    return (
+      <Alert
+        type="error"
+        showIcon
+        title="Не вдалося завантажити дані автошколи"
+        action={
+          <Button type="link" size="small" onClick={() => void refetch()}>
+            Спробувати ще
+          </Button>
+        }
+      />
+    );
+  }
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  const invitationTotal = data.invitations.pending + data.invitations.expired;
 
   return (
-    <>
-      {alert && (
-        <AlertMessage description={alert.description} title={alert.title} type={alert.type} />
-      )}
-      <Button type="primary" icon={<PlusOutlined />} onClick={showModal} aria-label="Open Modal">
-        Додати адміністратора
-      </Button>
-      <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item<SendInviteRequest>
-            label="FirstName"
-            name="firstName"
-            rules={[{ required: true, message: 'Please input your firstName!' }]}
-          >
-            <Input />
-          </Form.Item>
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={16}>
+        <OrganizationLogo logoUrl={data.organization.logoUrl} name={data.organization.name} />
+        <Flex vertical gap={4}>
+          <Title level={3} style={{ margin: 0 }}>
+            {data.organization.name}
+          </Title>
+          <Text type="secondary">Операційний огляд автошколи</Text>
+        </Flex>
+      </Flex>
 
-          <Form.Item<SendInviteRequest>
-            label="LastName"
-            name="lastName"
-            rules={[{ required: true, message: 'Please input your lastName!' }]}
-          >
-            <Input />
-          </Form.Item>
+      <Row gutter={[16, 16]}>
+        <DashboardCol xs={24} sm={12} lg={8}>
+          <StatsCard
+            title="Студенти"
+            value={data.users.byRole.STUDENT}
+            icon={<TeamOutlined />}
+            color="#13C2C2"
+          />
+        </DashboardCol>
+        <DashboardCol xs={24} sm={12} lg={8}>
+          <StatsCard
+            title="Викладачі"
+            value={data.users.byRole.TEACHER}
+            icon={<SolutionOutlined />}
+            color="#52C41A"
+          />
+        </DashboardCol>
+        <DashboardCol xs={24} sm={12} lg={8}>
+          <StatsCard
+            title="Інструктори"
+            value={data.users.byRole.INSTRUCTOR}
+            icon={<CarOutlined />}
+            color="#FAAD14"
+          />
+        </DashboardCol>
+      </Row>
 
-          <Form.Item<SendInviteRequest>
-            label="Email"
-            name="email"
-            rules={[{ required: true, message: 'Please input your email!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item<SendInviteRequest>
-            label="Phone"
-            name="phone"
-            rules={[{ validator: validateUkrainianPhone }]}
-          >
-            <PhoneInput />
-          </Form.Item>
-
-          <Form.Item label={null}>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
+      <Row gutter={[16, 16]}>
+        <DashboardCol xs={24} md={12}>
+          <DashboardWidget title="Статус учасників">
+            <Flex vertical gap={20}>
+              <Statistic title="Всього" value={data.users.total} />
+              <MetricList
+                total={data.users.total}
+                items={[
+                  { label: 'Активні', value: data.users.byStatus.ACTIVE, color: '#52C41A' },
+                  { label: 'Запрошені', value: data.users.byStatus.INVITED, color: '#0052FF' },
+                  { label: 'Заблоковані', value: data.users.byStatus.BLOCKED, color: '#f52629' },
+                ]}
+              />
+            </Flex>
+          </DashboardWidget>
+        </DashboardCol>
+        <DashboardCol xs={24} md={12}>
+          <DashboardWidget title="Запрошення">
+            <MetricList
+              total={invitationTotal}
+              items={[
+                { label: 'Очікують активації', value: data.invitations.pending, color: '#FAAD14' },
+                { label: 'Прострочені', value: data.invitations.expired, color: '#f52629' },
+              ]}
+            />
+          </DashboardWidget>
+        </DashboardCol>
+      </Row>
+    </Flex>
   );
 };

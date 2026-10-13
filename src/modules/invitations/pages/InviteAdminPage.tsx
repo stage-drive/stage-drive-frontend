@@ -1,0 +1,115 @@
+import { useState } from 'react';
+import { Alert, Button, Form, Input, Modal, type FormProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import {
+  type SendInviteRequest,
+  useSendInvitationMutation,
+} from '@/store/api/endpoints/invitationsApi';
+import { PhoneInput } from '@/shared/components/PhoneInput';
+import { normalizeUkrainianPhone, validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
+
+export const InviteAdminPage = () => {
+  const [invite] = useSendInvitationMutation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [alert, setAlert] = useState<{
+    title: string;
+    description: string;
+    type: 'success' | 'error';
+  } | null>(null);
+
+  const onFinish: FormProps<SendInviteRequest>['onFinish'] = async (values) => {
+    try {
+      await invite({
+        ...values,
+        phone: normalizeUkrainianPhone(values.phone),
+        role: 'ADMIN',
+      }).unwrap();
+      setAlert({
+        title: 'Invitation',
+        description: 'success sent invitation',
+        type: 'success',
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Failed to send invitation:', error);
+      setAlert({
+        title: 'Invitation',
+        description: 'error sent invitation',
+        type: 'error',
+      });
+    }
+  };
+
+  const onFinishFailed: FormProps<SendInviteRequest>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  return (
+    <>
+      {alert && <Alert title={alert.title} description={alert.description} type={alert.type} />}
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => setIsModalOpen(true)}
+        aria-label="Open Modal"
+      >
+        Додати адміністратора
+      </Button>
+      <Modal
+        title="Basic Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen}
+        onOk={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <Form
+          name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          style={{ maxWidth: 600 }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item<SendInviteRequest>
+            label="FirstName"
+            name="firstName"
+            rules={[{ required: true, message: 'Please input your firstName!' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<SendInviteRequest>
+            label="LastName"
+            name="lastName"
+            rules={[{ required: true, message: 'Please input your lastName!' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<SendInviteRequest>
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: 'Please input your email!' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<SendInviteRequest>
+            label="Phone"
+            name="phone"
+            rules={[{ validator: validateUkrainianPhone }]}
+          >
+            <PhoneInput />
+          </Form.Item>
+
+          <Form.Item label={null}>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
+};

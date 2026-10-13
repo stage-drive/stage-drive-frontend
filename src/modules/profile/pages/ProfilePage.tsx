@@ -1,21 +1,6 @@
-import React, { useEffect } from 'react';
-import {
-  Alert,
-  App,
-  Avatar,
-  Button,
-  Divider,
-  Flex,
-  Form,
-  Input,
-  Popconfirm,
-  Space,
-  Spin,
-  Typography,
-  Upload,
-} from 'antd';
+import { useEffect } from 'react';
+import { Alert, App, Card, Flex, Form, Skeleton, Typography } from 'antd';
 import type { UploadProps } from 'antd';
-import { DeleteOutlined, LockOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
@@ -25,23 +10,21 @@ import {
   useGetMeQuery,
   useUpdateMeMutation,
   useUploadMyAvatarMutation,
-  type UpdateProfileRequest,
-} from '../../../store/api/endpoints/authApi';
-import { baseApi } from '../../../store/api/baseApi';
-import { PhoneInput } from '../../../shared/components/PhoneInput';
+} from '@/store/api/endpoints/authApi';
+import { baseApi } from '@/store/api/baseApi';
+import { formatUkrainianPhone, normalizeUkrainianPhone } from '@/shared/utils/ukrainianPhone';
+import { ProfileAvatar } from '@/modules/profile/components/ProfileAvatar';
 import {
-  formatUkrainianPhone,
-  normalizeUkrainianPhone,
-  validateUkrainianPhone,
-} from '../../../shared/utils/ukrainianPhone';
+  ProfileDetailsForm,
+  type ProfileFormValues,
+} from '@/modules/profile/components/ProfileDetailsForm';
+import {
+  ChangePasswordForm,
+  type PasswordFormValues,
+} from '@/modules/profile/components/ChangePasswordForm';
+import { DeleteAccountSection } from '@/modules/profile/components/DeleteAccountSection';
 
-const { Title, Paragraph, Text } = Typography;
-
-interface PasswordFormValues {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
+const { Title, Text } = Typography;
 
 interface ApiError {
   data?: {
@@ -54,8 +37,8 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return Array.isArray(message) ? message.join(', ') : message || fallback;
 };
 
-export const ProfilePage: React.FC = () => {
-  const [profileForm] = Form.useForm<UpdateProfileRequest>();
+export const ProfilePage = () => {
+  const [profileForm] = Form.useForm<ProfileFormValues>();
   const [passwordForm] = Form.useForm<PasswordFormValues>();
   const { data: user, isLoading, isError } = useGetMeQuery();
   const [updateMe, { isLoading: isSavingProfile }] = useUpdateMeMutation();
@@ -72,12 +55,13 @@ export const ProfilePage: React.FC = () => {
       profileForm.setFieldsValue({
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
         phone: formatUkrainianPhone(user.phone),
       });
     }
   }, [profileForm, user]);
 
-  const onSaveProfile = async (values: UpdateProfileRequest) => {
+  const onSaveProfile = async (values: ProfileFormValues) => {
     try {
       await updateMe({
         firstName: values.firstName?.trim(),
@@ -91,7 +75,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   const onUploadAvatar: UploadProps['onChange'] = ({ file }) => {
-    const imageFile = file.originFileObj;
+    const imageFile = file.originFileObj ?? (file instanceof Blob ? file : undefined);
     if (!imageFile) return;
 
     const formData = new FormData();
@@ -141,170 +125,43 @@ export const ProfilePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Flex justify="center" style={{ padding: 48 }}>
-        <Spin size="large" />
-      </Flex>
+      <Card style={{ maxWidth: 760 }}>
+        <Skeleton avatar active paragraph={{ rows: 4 }} />
+      </Card>
     );
   }
 
   if (isError || !user) {
-    return <Alert type="error" showIcon message="Не вдалося завантажити профіль" />;
+    return <Alert type="error" showIcon title="Не вдалося завантажити профіль" />;
   }
 
   return (
-    <section style={{ maxWidth: 760 }}>
-      <Title level={2}>Профіль</Title>
-
-      <Flex align="center" gap={20} wrap style={{ margin: '24px 0' }}>
-        <Avatar size={88} src={user.avatarUrl} icon={<UserOutlined />} />
-        <Flex vertical gap={8}>
-          <Text strong>
-            {user.firstName} {user.lastName}
-          </Text>
-          <Text type="secondary">{user.email}</Text>
-          <Space wrap>
-            <Upload
-              accept="image/*"
-              showUploadList={false}
-              beforeUpload={() => false}
-              onChange={onUploadAvatar}
-            >
-              <Button icon={<UploadOutlined />} loading={isUploadingAvatar}>
-                Завантажити фото
-              </Button>
-            </Upload>
-            {user.avatarUrl && (
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                loading={isDeletingAvatar}
-                onClick={() => void onDeleteAvatar()}
-              >
-                Видалити фото
-              </Button>
-            )}
-          </Space>
-        </Flex>
+    <Flex vertical gap={24} style={{ maxWidth: 760 }}>
+      <Flex vertical gap={4}>
+        <Title level={3} style={{ margin: 0 }}>
+          Профіль
+        </Title>
+        <Text type="secondary">Особисті дані та безпека акаунта</Text>
       </Flex>
-
-      <Divider />
-
-      <Title level={4}>Особисті дані</Title>
-      <Paragraph type="secondary">
-        Email змінити поки неможливо: відповідні API endpoints ще не реалізовані на сервері.
-      </Paragraph>
-      <Form form={profileForm} layout="vertical" onFinish={onSaveProfile} style={{ maxWidth: 480 }}>
-        <Form.Item
-          label="Ім'я"
-          name="firstName"
-          rules={[{ required: true, whitespace: true, message: "Введіть ім'я" }]}
-        >
-          <Input autoComplete="given-name" />
-        </Form.Item>
-        <Form.Item
-          label="Прізвище"
-          name="lastName"
-          rules={[{ required: true, whitespace: true, message: 'Введіть прізвище' }]}
-        >
-          <Input autoComplete="family-name" />
-        </Form.Item>
-        <Form.Item label="Телефон" name="phone" rules={[{ validator: validateUkrainianPhone }]}>
-          <PhoneInput />
-        </Form.Item>
-        <Button type="primary" htmlType="submit" loading={isSavingProfile}>
-          Зберегти зміни
-        </Button>
-      </Form>
-
-      <Divider />
-
-      <Title level={4}>Зміна пароля</Title>
-      <Form
+      <ProfileAvatar
+        firstName={user.firstName}
+        lastName={user.lastName}
+        email={user.email}
+        role={user.role}
+        status={user.status}
+        avatarUrl={user.avatarUrl}
+        isUploading={isUploadingAvatar}
+        isDeleting={isDeletingAvatar}
+        onUpload={onUploadAvatar}
+        onDelete={() => void onDeleteAvatar()}
+      />
+      <ProfileDetailsForm form={profileForm} isSaving={isSavingProfile} onSubmit={onSaveProfile} />
+      <ChangePasswordForm
         form={passwordForm}
-        layout="vertical"
-        onFinish={onChangePassword}
-        style={{ maxWidth: 480 }}
-      >
-        <Form.Item
-          label="Поточний пароль"
-          name="currentPassword"
-          rules={[{ required: true, message: 'Введіть поточний пароль' }]}
-        >
-          <Input.Password prefix={<LockOutlined />} autoComplete="current-password" />
-        </Form.Item>
-        <Form.Item
-          label="Новий пароль"
-          name="newPassword"
-          rules={[
-            {
-              required: true,
-              message: 'Введіть пароль',
-            },
-            {
-              min: 8,
-              message: 'Пароль має містити щонайменше 8 символів',
-            },
-            {
-              pattern: /[A-ZА-ЯІЇЄҐ]/,
-              message: 'Пароль має містити хоча б одну велику літеру',
-            },
-            {
-              pattern: /[a-zа-яіїєґ]/,
-              message: 'Пароль має містити хоча б одну малу літеру',
-            },
-            {
-              pattern: /\d/,
-              message: 'Пароль має містити хоча б одну цифру',
-            },
-            {
-              pattern: /[^A-Za-zА-Яа-яІіЇїЄєҐґ0-9]/,
-              message: 'Пароль має містити хоча б один спеціальний символ',
-            },
-          ]}
-        >
-          <Input.Password prefix={<LockOutlined />} autoComplete="new-password" />
-        </Form.Item>
-        <Form.Item
-          label="Підтвердження нового пароля"
-          name="confirmPassword"
-          dependencies={['newPassword']}
-          rules={[
-            { required: true, message: 'Підтвердьте новий пароль' },
-            ({ getFieldValue }) => ({
-              validator(_, value: string | undefined) {
-                if (!value || getFieldValue('newPassword') === value) return Promise.resolve();
-                return Promise.reject(new Error('Паролі не збігаються'));
-              },
-            }),
-          ]}
-        >
-          <Input.Password prefix={<LockOutlined />} autoComplete="new-password" />
-        </Form.Item>
-        <Button type="primary" htmlType="submit" loading={isChangingPassword}>
-          Змінити пароль
-        </Button>
-      </Form>
-
-      <Divider />
-
-      <Title level={4}>Видалення акаунта</Title>
-      <Paragraph type="secondary">
-        Після видалення ви вийдете із системи. Цю дію не можна скасувати.
-      </Paragraph>
-      <Popconfirm
-        title="Видалити акаунт?"
-        description="Ви втратите доступ до профілю та даних акаунта."
-        okText="Видалити акаунт"
-        cancelText="Скасувати"
-        okButtonProps={{ danger: true, loading: isDeletingAccount }}
-        onConfirm={() => void onDeleteAccount()}
-      >
-        <Button danger icon={<DeleteOutlined />} loading={isDeletingAccount}>
-          Видалити акаунт
-        </Button>
-      </Popconfirm>
-    </section>
+        isSaving={isChangingPassword}
+        onSubmit={onChangePassword}
+      />
+      <DeleteAccountSection isDeleting={isDeletingAccount} onDelete={() => void onDeleteAccount()} />
+    </Flex>
   );
 };
-
-export default ProfilePage;

@@ -1,104 +1,121 @@
-import { Alert, Col, Flex, Row, Skeleton, Space, Typography } from 'antd';
-import { TeamOutlined, UserSwitchOutlined, BookOutlined, CarOutlined } from '@ant-design/icons';
-import { StatsCard } from '../components/common/StatsCard';
-import { DashboardWidget } from '../components/common/DashboardWidget';
-import { useGetOwnerDashboardQuery } from '../../../store/api/endpoints/dashboardApi';
+import { Alert, Button, Flex, Row, Statistic, Tag, Typography } from 'antd';
+import { BookOutlined, CarOutlined, TeamOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { DashboardCol } from '@/modules/dashboard/components/DashboardCol';
+import { DashboardPageSkeleton } from '@/modules/dashboard/components/DashboardPageSkeleton';
+import { DashboardWidget } from '@/modules/dashboard/components/DashboardWidget';
+import { MetricList } from '@/modules/dashboard/components/MetricList';
+import { StatsCard } from '@/modules/dashboard/components/StatsCard';
+import { OrganizationLogo } from '@/modules/organization/components/OrganizationLogo';
+import { useGetOwnerDashboardQuery } from '@/store/api/endpoints/dashboardApi';
 
 const { Title, Text } = Typography;
 
 export const OwnerDashboardPage = () => {
   const { data, isLoading, isError, refetch } = useGetOwnerDashboardQuery();
 
-  if (isLoading) {
-    return <Skeleton active paragraph={{ rows: 6 }} />;
-  }
+  if (isLoading) return <DashboardPageSkeleton cards={4} />;
 
   if (isError || !data) {
     return (
       <Alert
         type="error"
         showIcon
-        message="Не вдалося завантажити дані автошколи"
-        action={<a onClick={() => void refetch()}>Спробувати ще</a>}
+        title="Не вдалося завантажити дані автошколи"
+        action={
+          <Button type="link" size="small" onClick={() => void refetch()}>
+            Спробувати ще
+          </Button>
+        }
       />
     );
   }
 
+  const invitationTotal = data.invitations.pending + data.invitations.expired;
+
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-      <Flex vertical gap={4}>
-        <Title level={2} style={{ margin: 0 }}>
-          {data.organization.name}
-        </Title>
-        <Text type="secondary">Загальний огляд автошколи</Text>
+    <Flex vertical gap={24}>
+      <Flex align="center" justify="space-between" gap={16} wrap>
+        <Flex align="center" gap={16} style={{ minWidth: 0 }}>
+          <OrganizationLogo
+            logoUrl={data.organization.logoUrl}
+            name={data.organization.name}
+          />
+          <Flex vertical gap={4}>
+            <Title level={3} style={{ margin: 0 }}>
+              {data.organization.name}
+            </Title>
+            <Text type="secondary">Загальний огляд автошколи</Text>
+          </Flex>
+        </Flex>
+        <Tag color={data.organization.status === 'ACTIVE' ? 'success' : 'error'}>
+          {data.organization.status === 'ACTIVE' ? 'Автошкола активна' : 'Автошколу заблоковано'}
+        </Tag>
       </Flex>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
+        <DashboardCol xs={24} sm={12} lg={6}>
           <StatsCard
             title="Адміністратори"
             value={data.users.byRole.ADMIN}
             icon={<UserSwitchOutlined />}
+            color="#0052FF"
           />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        </DashboardCol>
+        <DashboardCol xs={24} sm={12} lg={6}>
           <StatsCard
             title="Студенти"
             value={data.users.byRole.STUDENT}
             icon={<TeamOutlined />}
-            color="#0052FF"
+            color="#13C2C2"
           />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatsCard title="Викладачі" value={data.users.byRole.TEACHER} icon={<BookOutlined />} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        </DashboardCol>
+        <DashboardCol xs={24} sm={12} lg={6}>
+          <StatsCard
+            title="Викладачі"
+            value={data.users.byRole.TEACHER}
+            icon={<BookOutlined />}
+            color="#52C41A"
+          />
+        </DashboardCol>
+        <DashboardCol xs={24} sm={12} lg={6}>
           <StatsCard
             title="Інструктори"
             value={data.users.byRole.INSTRUCTOR}
             icon={<CarOutlined />}
+            color="#FAAD14"
           />
-        </Col>
+        </DashboardCol>
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} md={12}>
+        <DashboardCol xs={24} md={12}>
           <DashboardWidget title="Користувачі автошколи">
-            <Flex justify="space-between">
-              <Text>Всього</Text>
-              <Text strong>{data.users.total}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>Активні</Text>
-              <Text strong>{data.users.byStatus.ACTIVE}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>Запрошені</Text>
-              <Text strong>{data.users.byStatus.INVITED}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>Заблоковані</Text>
-              <Text strong>{data.users.byStatus.BLOCKED}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>Архівні</Text>
-              <Text strong>{data.users.byStatus.ARCHIVED}</Text>
+            <Flex vertical gap={20}>
+              <Statistic title="Всього" value={data.users.total} />
+              <MetricList
+                total={data.users.total}
+                items={[
+                  { label: 'Активні', value: data.users.byStatus.ACTIVE, color: '#52C41A' },
+                  { label: 'Запрошені', value: data.users.byStatus.INVITED, color: '#0052FF' },
+                  { label: 'Заблоковані', value: data.users.byStatus.BLOCKED, color: '#f52629' },
+                  { label: 'Архівні', value: data.users.byStatus.ARCHIVED, color: '#8c8c8c' },
+                ]}
+              />
             </Flex>
           </DashboardWidget>
-        </Col>
-        <Col xs={24} md={12}>
+        </DashboardCol>
+        <DashboardCol xs={24} md={12}>
           <DashboardWidget title="Запрошення">
-            <Flex justify="space-between">
-              <Text>Очікують активації</Text>
-              <Text strong>{data.invitations.pending}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>Прострочені</Text>
-              <Text strong>{data.invitations.expired}</Text>
-            </Flex>
+            <MetricList
+              total={invitationTotal}
+              items={[
+                { label: 'Очікують активації', value: data.invitations.pending, color: '#FAAD14' },
+                { label: 'Прострочені', value: data.invitations.expired, color: '#f52629' },
+              ]}
+            />
           </DashboardWidget>
-        </Col>
+        </DashboardCol>
       </Row>
-    </Space>
+    </Flex>
   );
 };

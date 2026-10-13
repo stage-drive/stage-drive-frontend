@@ -1,30 +1,12 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import type { UserRole } from '../../store/api/endpoints/authApi';
+import type { UserRole } from '@/store/api/types';
+import { homeRouteForRole, normalizeUserRole } from '@/app/router/roleHome';
 
 interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
   userRole?: UserRole | string;
 }
-
-const ROLE_HOME_ROUTES: Record<UserRole, string> = {
-  OWNER: '/owner/dashboard',
-  ADMIN: '/admin/dashboard',
-  TEACHER: '/teacher/dashboard',
-  INSTRUCTOR: '/instructor/dashboard',
-  STUDENT: '/student/dashboard',
-};
-
-const normalizeUserRole = (role?: UserRole | string): UserRole | null => {
-  if (!role) {
-    return null;
-  }
-
-  const normalizedRole = role.toUpperCase() as UserRole;
-  return Object.prototype.hasOwnProperty.call(ROLE_HOME_ROUTES, normalizedRole)
-    ? normalizedRole
-    : null;
-};
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, userRole }) => {
   const token = localStorage.getItem('token');
@@ -45,8 +27,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, us
       .filter(Boolean);
 
     if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
-      const defaultRoute = ROLE_HOME_ROUTES[normalizedUserRole] || '/login';
-      return <Navigate to={defaultRoute} replace />;
+      return <Navigate to={homeRouteForRole(normalizedUserRole)} replace />;
     }
   }
 

@@ -5,14 +5,14 @@ import {
   useCancelInvitationMutation,
   useGetInvitationsQuery,
   useResendInvitationMutation,
-} from '../../../store/api/endpoints/invitationsApi';
-import { normalizeUkrainianPhone } from '../../../shared/utils/ukrainianPhone';
-import { useCreateStudentMutation } from '../../../store/api/endpoints/studentsApi';
+} from '@/store/api/endpoints/invitationsApi';
+import { normalizeUkrainianPhone } from '@/shared/utils/ukrainianPhone';
+import { useCreateStudentMutation } from '@/store/api/endpoints/studentsApi';
 import {
   InviteMemberFormModal,
   type StudentInviteFormValues,
-} from '../../users/components/InviteMemberFormModal';
-import { InvitationTable } from '../../users/components/InvitationTable';
+} from '@/modules/invitations/components/InviteMemberFormModal';
+import { InvitationTable } from '@/modules/invitations/components/InvitationTable';
 
 const { Title, Paragraph } = Typography;
 
@@ -118,16 +118,16 @@ export const StudentsPage: React.FC = () => {
   };
 
   return (
-    <section>
+    <Flex vertical>
       <Flex align="center" justify="space-between" wrap gap={16}>
-        <div>
+        <Flex vertical>
           <Title level={2} style={{ margin: 0 }}>
             Студенти
           </Title>
           <Paragraph type="secondary" style={{ margin: '8px 0 0' }}>
             Додавання нового студента з автоматичним запрошенням до активації акаунта
           </Paragraph>
-        </div>
+        </Flex>
         <Button type="primary" icon={<PlusOutlined />} onClick={openAddStudentModal}>
           Додати студента
         </Button>
@@ -137,7 +137,7 @@ export const StudentsPage: React.FC = () => {
         <Alert
           type="error"
           showIcon
-          message="Не вдалося завантажити список студентів"
+          title="Не вдалося завантажити список студентів"
           style={{ marginTop: 24 }}
         />
       )}
@@ -165,8 +165,6 @@ export const StudentsPage: React.FC = () => {
         hideRole
         showStudentFields
       />
-    </section>
+    </Flex>
   );
 };
-
-export default StudentsPage;

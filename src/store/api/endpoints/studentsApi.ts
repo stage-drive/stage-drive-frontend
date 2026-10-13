@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi';
+import { baseApi } from '@/store/api/baseApi';
 
 export type StudentTransmission = 'MANUAL' | 'AUTOMATIC';
 export type StudentCategory = 'A' | 'B' | 'C' | 'D' | 'BE' | 'CE' | 'DE';
