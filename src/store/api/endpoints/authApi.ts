@@ -1,6 +1,7 @@
-import { baseApi } from '../baseApi';
+import { baseApi } from '@/store/api/baseApi';
+import type { UserRole } from '@/store/api/types';
 
-export type UserRole = 'OWNER' | 'ADMIN' | 'TEACHER' | 'INSTRUCTOR' | 'STUDENT';
+export type { UserRole };
 
 export interface User {
   id: string;
@@ -8,7 +9,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
-  status: 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHIVED';
+  status?: 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHIVED';
   phone?: string | null;
   avatarUrl?: string | null;
   organizationId: string;

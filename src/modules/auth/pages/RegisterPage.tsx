@@ -1,19 +1,8 @@
-import React from 'react';
-import { RegisterForm } from '../components/RegisterForm';
+import { Flex } from 'antd';
+import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 
-export const RegisterPage: React.FC = () => {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <RegisterForm />
-    </div>
-  );
-};
-
-export default RegisterPage;
+export const RegisterPage = () => (
+  <Flex align="center" justify="center" style={{ minHeight: '100vh' }}>
+    <RegisterForm />
+  </Flex>
+);

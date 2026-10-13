@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi';
+import { baseApi } from '@/store/api/baseApi';
 
 export type DashboardUserStatus = 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHIVED';
 

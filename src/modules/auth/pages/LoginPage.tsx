@@ -1,20 +1,8 @@
-import React from 'react';
-import { LoginForm } from '../components/LoginForm';
+import { Flex } from 'antd';
+import { LoginForm } from '@/modules/auth/components/LoginForm';
 
-export const LoginPage: React.FC = () => {
-  return (
-    <div
-      style={{
-        // padding: '20px',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <LoginForm />
-    </div>
-  );
-};
-
-export default LoginPage;
+export const LoginPage = () => (
+  <Flex align="center" justify="center" style={{ minHeight: '100vh' }}>
+    <LoginForm />
+  </Flex>
+);

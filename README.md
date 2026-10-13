@@ -63,68 +63,88 @@ npm test
 src/
 ├── app/
 │   ├── App.tsx
-│   ├── providers/
+│   ├── AuthErrorListener.tsx
 │   └── router/
-│       └── AppRoutes.tsx
+│       ├── AppRoutes.tsx
+│       ├── ProtectedRoute.tsx
+│       ├── roleHome.ts
+│       └── useAuthSession.ts
 ├── assets/
+│   ├── fonts/
+│   ├── icons/
+│   └── images/
 ├── layouts/
-│   ├── OwnerLayout/
-│   │   ├── OwnerLayout.tsx
-│   │   └── OwnerSidebar.tsx
-│   │
-│   ├── AdminLayout/
-│   │   ├── AdminLayout.tsx
-│   │   └── AdminSidebar.tsx
-│   │
-│   ├── TeacherLayout/
-│   ├── InstructorLayout/
-│   └── StudentLayout/
+│   ├── BaseLayout.tsx
+│   ├── OwnerLayout.tsx
+│   ├── AdminLayout.tsx
+│   ├── TeacherLayout.tsx
+│   ├── InstructorLayout.tsx
+│   └── StudentLayout.tsx
 ├── modules/
 │   ├── auth/
 │   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── utils/
-│   │   └── ...
+│   │   └── pages/
 │   ├── cars/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── dashboard/
-│   │   ├── pages/
-│   │   │   ├── OwnerDashboardPage.tsx
-│   │   │   ├── AdminDashboardPage.tsx
-│   │   │   ├── TeacherDashboardPage.tsx
-│   │   │   ├── InstructorDashboardPage.tsx
-│   │   │   └── StudentDashboardPage.tsx
-│   │   │
-│   │   └── components/
-│   │       ├── StatsCard.tsx
-│   │       ├── DashboardWidget.tsx
-│   │       └── ...
+│   │   ├── components/
+│   │   │   ├── StatsCard.tsx
+│   │   │   └── DashboardWidget.tsx
+│   │   └── pages/
+│   │       ├── OwnerDashboardPage.tsx
+│   │       ├── AdminDashboardPage.tsx
+│   │       ├── TeacherDashboardPage.tsx
+│   │       ├── InstructorDashboardPage.tsx
+│   │       └── StudentDashboardPage.tsx
 │   ├── groups/
+│   │   ├── components/
+│   │   └── pages/
+│   ├── invitations/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── notifications/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── payments/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── practice/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── profile/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── schedule/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── students/
+│   │   ├── components/
+│   │   └── pages/
 │   ├── tests/
-│   ├── theory/
-│   └── users/
+│   │   ├── components/
+│   │   └── pages/
+│   └── theory/
+│       ├── components/
+│       └── pages/
 ├── shared/
+│   ├── components/
+│   └── utils/
 ├── store/
-│   ├── api/
-│   │   ├── baseApi.ts
-│   │   └── endpoints/
-│   │       ├── authApi.ts
-│   │       ├── studentsApi.ts
-│   │       ├── groupsApi.ts
-│   │       ├── paymentsApi.ts
-│   │       └── scheduleApi.ts
 │   ├── store.ts
-│   └── ...
+│   └── api/
+│       ├── baseApi.ts
+│       ├── types.ts
+│       └── endpoints/
+│           ├── authApi.ts
+│           ├── dashboardApi.ts
+│           ├── invitationsApi.ts
+│           └── studentsApi.ts
 ├── styles/
+│   └── antdTheme.ts
+├── App.css
 ├── index.css
-├── main.tsx
-└── ...
+└── main.tsx
 ```
 
 ```bash
@@ -134,33 +154,40 @@ tests/
 ├── app/
 │   └── router/
 │       └── ProtectedRoute.test.tsx
-└── modules/
-    ├── auth/
-    │   └── components/
-    │       ├── LoginForm.test.tsx
-    │       └── RegisterForm.test.tsx
-    └── dashboard/
-        └── components/
-            ├── common/
-            │   ├── StatsCard.test.tsx
-            │   └── DashboardWidget.test.tsx
-            └── owner/
-                └── SystemEventsWidget.test.tsx
+├── modules/
+│   ├── auth/
+│   │   ├── components/
+│   │   └── pages/
+│   ├── dashboard/
+│   │   └── components/
+│   ├── invitations/
+│   │   └── pages/
+│   └── profile/
+│       └── pages/
+└── shared/
+    └── utils/
+        └── ukrainianPhone.test.ts
 ```
 
 ### Як читати цю структуру
 
-- `app/` — базові налаштування проєкту, маршрути, провайдери.
-- `layouts/` — рольові шаблони сторінок: Sidebar, Header та загальна структура інтерфейсу для Owner, Admin, Teacher, Instructor та Student
-- `modules/` — сама логіка сторінок і функціональних блоків.
-- `shared/` — компоненти, типи та утиліти, які використовуються в кількох місцях.
-- `store/` — глобальний стан, Redux slices та API через RTK Query.
-- `styles/` — глобальні стилі та тема застосунку.
+- `app/` — корінь застосунку, маршрути, сесія та слухач помилок авторизації.
+- `layouts/` — каркас сторінки. `BaseLayout` — спільне меню і шапка, решта файлів — варіанти для Owner, Admin, Teacher, Instructor та Student.
+- `modules/` — сторінки і компоненти за функціями. У кожному модулі є `pages/` і `components/`. Порожні папки — місце для екранів, яких ще немає.
+- `shared/` — компоненти й утиліти, які потрібні в кількох модулях.
+- `store/` — Redux store і запити до API через RTK Query.
+- `styles/` — тема Ant Design.
 - `tests/` — unit-тести. Структура папок повторює `src/`.
 
 > `layout` відповідає за каркас сторінки, а `module` — за вміст і функціональність.
 
 ## Важливі нотатки
+
+- Імпорти з `src/` пишіть через аліас `@/`, а не через довгі відносні шляхи на кшталт `../../../`. Аліас вказує на папку `src`, розширення файлу не додавайте.
+
+```ts
+import { PhoneInput } from '@/shared/components/PhoneInput';
+```
 
 - Глобальні стилі Ant Design підключені в [src/main.tsx](src/main.tsx).
 - Базова конфігурація RTK Query знаходиться в [src/store/api/baseApi.ts](src/store/api/baseApi.ts).
@@ -195,7 +222,6 @@ tests/
 ### Основні гілки
 
 - `main` — продакшн-версія, стабільний релізний код.
-- `test` — середовище для тестування командою QA.
 - `develop` — основна гілка розробки, сюди зливається готовий функціонал.
 
 ### Робочі гілки
@@ -210,17 +236,15 @@ tests/
 
 Порядок роботи такий:
 
-1. Створити нову гілку від `main`.
+1. Створити нову гілку від `dev`.
 2. Розробляти задачу в гілці типу `feature/...`, `fix/...` або `refactor/...`.
-3. Після завершення — відкрити Pull Request у `develop`.
+3. Після завершення — відкрити Pull Request у `dev`.
 4. Мержаєте його (без апрувів) і чекаєте автоматичного деплою на dev-сервер.
-5. Заходьте на dev-сайт і перевіряєте, що ваш функціонал працює.
-6. Якщо на develop все працює чудово cтворюєте другий Pull Request з цієї ж фіча-гілки у `test`. Мержаєте його в test.
-7. Перевіряєте базовий респонс додатку на test-середовищі і віддаєте задачу тестувальникам (QA).
-8. Якщо під час тестування виявили помилку повертаєтесь, якщо баг незначний — ви можете доправити його прямо в поточній фіча-гілці feature/..., а якщо це окрема задача від QA — створюєте нову гілку bugfix/<CLICKUP-ID>-<description> від `main` і проходите той самий шлях (develop -> test -> main)
-9. Коли QA поставили "Approved" (Схвалено) cтворюєте третій Pull Request -> main.
+5. Заходьте на dev-сайт і перевіряєте, що ваш функціонал працює і віддаєте задачу тестувальникам (QA).
+8. Якщо під час тестування виявили помилку повертаєтесь і проходите той самий шлях
+9. Коли весь проект готовий и все перевырено cтворюєте  Pull Request -> main.
 
-### 1. develop -> 2. test -> 3. main
+### 1. develop  -> 3. main
 
 Злиття в main: PR у main може бути злитий тільки після approval іншого frontend-розробника. Автор PR не виконує merge у main власного PR без необхідного approval.
 
@@ -248,12 +272,12 @@ npm run build
 ### Git cheat sheet
 
 ```bash
-# Оновити main і перейти на нього
+# Оновити develop і перейти на нього
 git fetch origin
-git checkout main
-git pull origin main
+git checkout develop
+git pull origin develop
 
-# Створити нову feature-гілку від main
+# Створити нову feature-гілку від develop
 git checkout -b feature/"назва"
 
 # Перевірити статус
@@ -291,6 +315,8 @@ Pull Request також повинен містити ID задачі ClickUp.
 
 ## Корисні посилання
 
+- [Продакшн](https://stage-drive-backend-test-910081714151.us-central1.run.app/login)
+- [Swagger](https://stage-drive-backend-test-910081714151.us-central1.run.app/api/docs)
 - [Документація React](https://react.dev/learn)
 - [Документація Vite](https://vite.dev/guide/)
 - [Документація Ant Design](https://ant.design/docs/react/introduce)

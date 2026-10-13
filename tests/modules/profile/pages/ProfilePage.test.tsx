@@ -134,4 +134,22 @@ describe('ProfilePage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
     expect(localStorage.getItem('token')).toBeNull();
   });
+
+  it('sends the selected image to the avatar endpoint', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ProfilePage />);
+
+    const input = document.querySelector('input[type="file"]');
+    expect(input).toBeInstanceOf(HTMLInputElement);
+
+    const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
+    await user.upload(input as HTMLInputElement, file);
+
+    await waitFor(() => {
+      expect(mockUploadAvatar).toHaveBeenCalledTimes(1);
+    });
+
+    const formData = mockUploadAvatar.mock.calls[0][0] as FormData;
+    expect(formData.get('file')).toBeInstanceOf(Blob);
+  });
 });

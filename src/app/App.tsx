@@ -1,20 +1,18 @@
 import { BrowserRouter } from 'react-router-dom';
-import { ConfigProvider, App as AntdApp } from 'antd';
-import { antdTheme } from '../styles/antdTheme';
-import { AppRoutes } from './router/AppRoutes';
-import { AuthErrorListener } from './AuthErrorListener';
+import { App as AntdApp } from 'antd';
+import { ThemeModeProvider } from '@/app/ThemeModeProvider';
+import { AppRoutes } from '@/app/router/AppRoutes';
+import { AuthErrorListener } from '@/app/AuthErrorListener';
 
-function App() {
+export function App() {
   return (
-    <ConfigProvider theme={antdTheme}>
+    <ThemeModeProvider>
       <AntdApp>
         <BrowserRouter>
           <AuthErrorListener />
           <AppRoutes />
         </BrowserRouter>
       </AntdApp>
-    </ConfigProvider>
+    </ThemeModeProvider>
   );
 }
-
-export default App;

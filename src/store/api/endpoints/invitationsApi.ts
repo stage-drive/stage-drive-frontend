@@ -1,6 +1,7 @@
-import { baseApi } from '../baseApi';
+import { baseApi } from '@/store/api/baseApi';
+import type { UserRole } from '@/store/api/types';
 
-export type UserRole = 'OWNER' | 'ADMIN' | 'TEACHER' | 'INSTRUCTOR' | 'STUDENT';
+export type { UserRole };
 
 export interface SendInviteRequest {
   firstName: string;

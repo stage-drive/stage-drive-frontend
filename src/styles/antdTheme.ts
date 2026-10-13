@@ -1,6 +1,9 @@
-import type { ThemeConfig } from 'antd';
+import { theme, type ThemeConfig } from 'antd';
 
-export const antdTheme: ThemeConfig = {
+export type ThemeMode = 'light' | 'dark';
+
+export const getAntdTheme = (mode: ThemeMode): ThemeConfig => ({
+  algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
   // 1. Глобальные токены (применяются ко всем компонентам)
   token: {
     // Основной цвет приложения
@@ -18,6 +21,17 @@ export const antdTheme: ThemeConfig = {
     colorInfo: '#0052FF',
 
     // Фон и границы
+    ...(mode === 'light'
+      ? { colorBgLayout: '#f8f9fb' }
+      : {
+          colorBgBase: '#2A4068',
+          colorBgLayout: '#2A4068',
+          colorBgContainer: '#1C2840',
+          colorBgElevated: '#314E7A',
+          colorBorder: '#3D5A86',
+          colorBorderSecondary: '#34527A',
+          colorShadow: 'rgba(0, 0, 0, 0.45)',
+        }),
     borderRadius: 8, // Скругление кнопок, карточек, инпутов
 
     // Типографика
@@ -49,9 +63,17 @@ export const antdTheme: ThemeConfig = {
 
     // Настройки шапки Layout
     Layout: {
-      headerBg: '#ffffff',
+      ...(mode === 'light' ? { headerBg: '#ffffff' } : { headerBg: '#03102B' }),
       siderBg: '#03102B',
     },
+    ...(mode === 'dark'
+      ? {
+          Card: {
+            colorBgContainer: '#03102B',
+            colorBorderSecondary: 'rgba(255, 255, 255, 0.08)',
+          },
+        }
+      : {}),
 
     // Настройки полей ввода (Input)
     Input: {
@@ -151,4 +173,4 @@ export const antdTheme: ThemeConfig = {
       borderRadius: 8,
     },
   },
-};
+});

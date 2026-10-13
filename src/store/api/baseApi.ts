@@ -110,6 +110,7 @@ export const baseApi = createApi({
     'Schedule',
     'Invitations',
     'Dashboard',
+    'Organization',
   ],
   endpoints: () => ({}),
 });
