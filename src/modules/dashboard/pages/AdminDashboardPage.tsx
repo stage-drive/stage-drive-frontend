@@ -54,17 +54,19 @@ export const AdminDashboardPage = () => {
       {alert && (
         <AlertMessage description={alert.description} title={alert.title} type={alert.type} />
       )}
+
       <Button type="primary" onClick={showModal}>
-        Open Modal
+        Відкрити вікно
       </Button>
+
       <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        title="Запросити користувача"
+        closable={{ 'aria-label': 'Кнопка закриття' }}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form
+        <Form<SendInviteRequest>
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
@@ -75,40 +77,60 @@ export const AdminDashboardPage = () => {
           autoComplete="off"
         >
           <Form.Item<SendInviteRequest>
-            label="FirstName"
+            label="Ім'я"
             name="firstName"
-            rules={[{ required: true, message: 'Please input your firstName!' }]}
+            rules={[
+              {
+                required: true,
+                message: "Будь ласка, введіть ім'я!",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item<SendInviteRequest>
-            label="LastName"
+            label="Прізвище"
             name="lastName"
-            rules={[{ required: true, message: 'Please input your lastName!' }]}
+            rules={[
+              {
+                required: true,
+                message: 'Будь ласка, введіть прізвище!',
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item<SendInviteRequest>
-            label="Email"
+            label="Електронна пошта"
             name="email"
-            rules={[{ required: true, message: 'Please input your email!' }]}
+            rules={[
+              {
+                required: true,
+                message: 'Будь ласка, введіть електронну пошту!',
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item<SendInviteRequest>
-            label="Phone"
+            label="Телефон"
             name="phone"
-            rules={[{ required: true, message: 'Please input your phone!' }]}
+            rules={[
+              {
+                required: true,
+                message: 'Будь ласка, введіть номер телефону!',
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item label={null}>
             <Button type="primary" htmlType="submit">
-              Submit
+              Надіслати запрошення
             </Button>
           </Form.Item>
         </Form>
