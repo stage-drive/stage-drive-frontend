@@ -20,8 +20,6 @@ const teacherMenuItems: MenuProps['items'] = [
   { key: '/teacher/tests', icon: <FileTextOutlined />, label: 'Тести' },
   { key: '/teacher/attendance', icon: <CheckSquareOutlined />, label: 'Відвідуваність' },
   { key: '/teacher/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-
-  { type: 'divider' },
   { key: '/teacher/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];

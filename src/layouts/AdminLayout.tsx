@@ -27,8 +27,6 @@ const adminMenuItems: MenuProps['items'] = [
   { key: '/admin/topics', icon: <GroupOutlined />, label: 'Теми' },
   { key: '/admin/payments', icon: <DollarOutlined />, label: 'Оплата' },
   { key: '/admin/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-
-  { type: 'divider' },
   { key: '/admin/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];

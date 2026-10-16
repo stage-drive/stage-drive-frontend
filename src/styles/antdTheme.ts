@@ -49,6 +49,8 @@ export const getAntdTheme = (mode: ThemeMode): ThemeConfig => ({
       darkItemSelectedBg: '#0052FF', // Синий фон активного пункта
       darkItemSelectedColor: '#ffffff', // Белый текст активного пункта
       darkItemBg: 'transparent',
+      itemMarginBlock: 0,
+      itemMarginInline: 0,
     },
 
     // Настройки кнопок

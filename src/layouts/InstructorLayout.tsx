@@ -16,8 +16,6 @@ const instructorMenuItems: MenuProps['items'] = [
   { key: '/instructor/practice', icon: <CarOutlined />, label: 'Практичні заняття' },
   { key: '/instructor/my-students', icon: <TeamOutlined />, label: 'Мої студенти' },
   { key: '/instructor/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-
-  { type: 'divider' },
   { key: '/instructor/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];

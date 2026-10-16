@@ -1,4 +1,4 @@
-import { Alert, Avatar, Button, Empty, Flex, Row, Typography } from 'antd';
+import { Alert, Button, Flex, Row, Typography } from 'antd';
 import { BookOutlined, CalendarOutlined } from '@ant-design/icons';
 import { DashboardCol } from '@/modules/dashboard/components/DashboardCol';
 import { DashboardPageSkeleton } from '@/modules/dashboard/components/DashboardPageSkeleton';
@@ -32,8 +32,6 @@ export const StudentDashboardPage = () => {
     );
   }
 
-  const nextLesson = data.upcomingLessons[0];
-
   return (
     <Flex vertical gap={24}>
       <Flex align="center" gap={16}>
@@ -65,24 +63,26 @@ export const StudentDashboardPage = () => {
         </DashboardCol>
       </Row>
 
-      <DashboardWidget title="Найближче заняття">
-        {nextLesson ? (
-          <Flex align="center" gap={16}>
-            <Avatar size={48} icon={<CalendarOutlined />} style={{ backgroundColor: '#0052FF' }} />
-            <Flex vertical gap={2}>
-              <Text strong>{nextLesson.groupName}</Text>
-              <Text>{nextLesson.topic}</Text>
-              <Text type="secondary">
-                {formatLessonTime(nextLesson.scheduledAt, data.organization.timezone)}
-              </Text>
-            </Flex>
-          </Flex>
-        ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="У вас поки немає запланованих занять."
-          />
-        )}
+      <DashboardWidget title="Найближчі заняття">
+        <DashboardRecordList
+          items={data.upcomingLessons}
+          rowKey={(lesson) => lesson.id}
+          emptyText="У вас поки немає запланованих занять."
+          renderItem={(lesson, divided) => (
+            <DashboardRecord
+              divided={divided}
+              icon={<CalendarOutlined />}
+              iconColor="#0052FF"
+              title={lesson.groupName}
+              description={lesson.topic}
+              extra={
+                <Text type="secondary">
+                  {formatLessonTime(lesson.scheduledAt, data.organization.timezone)}
+                </Text>
+              }
+            />
+          )}
+        />
       </DashboardWidget>
 
       <DashboardWidget title="Мої групи">

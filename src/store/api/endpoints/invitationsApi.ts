@@ -79,7 +79,6 @@ export interface InvitationItem {
   email: string;
   role: 'OWNER' | 'ADMIN' | 'TEACHER' | 'INSTRUCTOR' | 'STUDENT';
   status: 'PENDING' | 'ACCEPTED' | 'CANCELLED' | 'EXPIRED';
-  createdAt?: string;
   expiresAt: string;
   emailDelivery?: {
     status: string;

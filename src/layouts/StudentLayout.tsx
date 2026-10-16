@@ -22,8 +22,6 @@ const studentMenuItems: MenuProps['items'] = [
   { key: '/student/progress', icon: <RiseOutlined />, label: 'Мій прогрес' },
   { key: '/student/payments', icon: <DollarOutlined />, label: 'Оплати' },
   { key: '/student/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-
-  { type: 'divider' },
   { key: '/student/profile', icon: <UserOutlined />, label: 'Профіль' },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];

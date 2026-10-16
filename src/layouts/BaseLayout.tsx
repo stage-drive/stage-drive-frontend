@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Avatar,
   Badge,
   Flex,
   Image,
@@ -17,18 +18,29 @@ import { useDispatch } from 'react-redux';
 import {
   BellOutlined,
   UserOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
   MoonOutlined,
   SunOutlined,
 } from '@ant-design/icons';
 import { useThemeMode } from '@/app/ThemeModeProvider';
+import { resolveMediaUrl } from '@/shared/utils/resolveMediaUrl';
+import { useGetMeQuery } from '@/store/api/endpoints/authApi';
+import type { UserRole } from '@/store/api/types';
 import { baseApi } from '@/store/api/baseApi';
 import logoIcon from '@/assets/icons/logoIcon.svg';
 import logoFull from '@/assets/icons/logofull.png';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
+
+const roleLabels: Record<UserRole, string> = {
+  OWNER: 'Власник',
+  ADMIN: 'Адміністратор',
+  TEACHER: 'Викладач',
+  INSTRUCTOR: 'Інструктор',
+  STUDENT: 'Студент',
+};
 
 interface BaseLayoutProps {
   roleTitle: string;
@@ -48,6 +60,11 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const location = useLocation();
   const dispatch = useDispatch();
   const { mode, setDarkTheme } = useThemeMode();
+  const { data: user } = useGetMeQuery();
+  const profileName = user ? `${user.firstName} ${user.lastName}` : '';
+  const profileRole = user ? roleLabels[user.role] : roleTitle;
+  const navigationItems = menuItems?.filter((item) => !item || !('key' in item) || item.key !== 'logout');
+  const logoutItem = menuItems?.find((item) => !!item && 'key' in item && item.key === 'logout');
   const notificationsPath = routePrefix ? `${routePrefix}/notifications` : '/notifications';
   const profilePath = profilePathOverride || (routePrefix ? `${routePrefix}/profile` : '/profile');
 
@@ -73,13 +90,34 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        trigger={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        trigger={null}
         styles={{
-          root: { overflow: 'hidden', zIndex: 3 },
+          root: { overflow: 'visible', zIndex: 3 },
           body: { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 },
         }}
       >
-        <Flex vertical style={{ flex: 1, minHeight: 0 }}>
+        <Flex vertical style={{ position: 'relative', flex: 1, minHeight: 0 }}>
+          <Button
+            type="default"
+            shape="circle"
+            className="sider-toggle"
+            aria-label={collapsed ? 'Розгорнути меню' : 'Згорнути меню'}
+            icon={collapsed ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
+            onClick={() => setCollapsed((value) => !value)}
+            style={{
+              position: 'absolute',
+              zIndex: 5,
+              top: collapsed ? 54 : 78,
+              right: -14,
+              width: 28,
+              height: 28,
+              minWidth: 28,
+              background: '#0052FF',
+              color: '#fff',
+              border: '2px solid #fff',
+              boxShadow: '0 2px 8px rgba(3, 16, 43, 0.28)',
+            }}
+          />
           <Flex
             align="center"
             justify="center"
@@ -108,29 +146,20 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
             theme="dark"
             mode="inline"
             selectedKeys={[location.pathname]}
-            items={menuItems}
+            items={navigationItems}
             onClick={handleMenuClick}
-            style={{ flex: 1, minHeight: 0, overflow: 'auto' }}
+            style={{ flex: 'none' }}
           />
-          <Flex
-            align="center"
-            justify={collapsed ? 'center' : 'space-between'}
-            style={{
-              flex: 'none',
-              height: 56,
-              paddingInline: collapsed ? 0 : 16,
-              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            }}
-          >
-            {collapsed ? null : <Text style={{ color: '#fff' }}>Темна тема</Text>}
-            <Switch
-              checked={mode === 'dark'}
-              onChange={setDarkTheme}
-              checkedChildren={<MoonOutlined />}
-              unCheckedChildren={<SunOutlined />}
-              aria-label={mode === 'dark' ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'}
+          {logoutItem ? (
+            <Menu
+              theme="dark"
+              mode="inline"
+              selectable={false}
+              items={[logoutItem]}
+              onClick={handleMenuClick}
+              style={{ flex: 'none', marginTop: 'auto', marginBottom: 16 }}
             />
-          </Flex>
+          ) : null}
         </Flex>
       </Sider>
 
@@ -147,13 +176,26 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
                 : '0 10px 28px rgba(3, 16, 43, 0.14)',
             borderBottom: mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.08)' : undefined,
             clipPath: 'inset(0 0 -40px 0)',
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: 'normal',
           }}
         >
-          <Flex align="center" justify="space-between" style={{ height: '100%' }}>
+          <Flex align="center" justify="space-between" style={{ width: '100%' }}>
             <Text strong style={{ fontSize: 16 }}>
               {roleTitle}
             </Text>
             <Space size={16} align="center">
+              <Flex align="center" gap={8}>
+                <Text>Темна тема</Text>
+                <Switch
+                  checked={mode === 'dark'}
+                  onChange={setDarkTheme}
+                  checkedChildren={<MoonOutlined />}
+                  unCheckedChildren={<SunOutlined />}
+                  aria-label={mode === 'dark' ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'}
+                />
+              </Flex>
               <Button
                 type="text"
                 shape="circle"
@@ -168,10 +210,27 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
 
               <Button
                 type="text"
-                shape="circle"
-                icon={<UserOutlined style={{ fontSize: 18 }} />}
+                className="header-profile"
                 onClick={() => navigate(profilePath)}
-              />
+                aria-label={profileName ? `${profileName}, ${profileRole}` : 'Профіль'}
+              >
+                <Flex align="center" gap={10}>
+                  <Avatar
+                    shape="circle"
+                    size={40}
+                    src={resolveMediaUrl(user?.avatarUrl)}
+                    icon={<UserOutlined />}
+                  />
+                  <Flex vertical justify="center" style={{ maxWidth: 180, lineHeight: 1.2 }}>
+                    <Text strong ellipsis style={{ fontSize: 14, lineHeight: '18px' }}>
+                      {profileName || 'Профіль'}
+                    </Text>
+                    {/* <Text type="secondary" ellipsis style={{ fontSize: 12, lineHeight: '16px' }}>
+                      {profileRole}
+                    </Text> */}
+                  </Flex>
+                </Flex>
+              </Button>
             </Space>
           </Flex>
         </Header>

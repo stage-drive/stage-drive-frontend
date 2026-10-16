@@ -82,6 +82,7 @@ export const AdminDashboardPage = () => {
                   { label: 'Активні', value: data.users.byStatus.ACTIVE, color: '#52C41A' },
                   { label: 'Запрошені', value: data.users.byStatus.INVITED, color: '#0052FF' },
                   { label: 'Заблоковані', value: data.users.byStatus.BLOCKED, color: '#f52629' },
+                  { label: 'Архівні', value: data.users.byStatus.ARCHIVED, color: '#8c8c8c' },
                 ]}
               />
             </Flex>

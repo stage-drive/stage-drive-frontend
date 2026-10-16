@@ -3,8 +3,27 @@ body {
   padding: 0;
 }
 
-.ant-menu-dark .ant-menu-item-divider {
-  border-top-width: 2px !important;
-  border-top-color: rgba(255, 255, 255, 0.3) !important;
-  margin-bottom: 12px !important;
+.sider-toggle.ant-btn:hover,
+.sider-toggle.ant-btn:focus,
+.sider-toggle.ant-btn:active {
+  background: #0052FF !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.header-profile.ant-btn {
+  height: 44px;
+  padding: 0 8px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-profile .ant-avatar,
+.header-profile .ant-avatar > img {
+  border-radius: 50%;
+}
+
+.header-profile .ant-avatar > img {
+  object-fit: cover;
 }
