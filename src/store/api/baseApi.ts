@@ -29,26 +29,10 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 
   const url = typeof args === 'string' ? args : args.url;
 
-  if (result.error && (result.error.status === 401 || result.error.status === 403)) {
-    if (url.includes('auth/login') || url.includes('auth/register')) {
-      return result;
-    }
-
-    if (result.error.status === 403) {
-      const errorData = result.error.data as { message?: string } | undefined;
-      window.dispatchEvent(
-        new CustomEvent('show-auth-error-modal', {
-          detail: {
-            message:
-              errorData?.message || 'Акаунт не знайдено. Зверніться до адміністратора за інвайтом.',
-          },
-        })
-      );
-      return result;
-    }
-  }
-
   if (result.error && result.error.status === 401) {
+    if (url.includes('auth/login') || url.includes('auth/register') || url.includes('auth/refresh')) {
+      return result;
+    }
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
 
