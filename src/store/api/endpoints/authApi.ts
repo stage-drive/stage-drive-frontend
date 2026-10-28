@@ -81,6 +81,14 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
 
+    checkRegistrationEmail: builder.mutation<{ available: boolean }, { email: string }>({
+      query: (body) => ({
+        url: 'auth/register/check-email',
+        method: 'POST',
+        body,
+      }),
+    }),
+
     // POST /api/auth/register
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (userData) => ({
@@ -195,6 +203,7 @@ export const {
   useChangeMyPasswordMutation,
   useDeleteMeMutation,
   useLoginMutation,
+  useCheckRegistrationEmailMutation,
   useRegisterMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,

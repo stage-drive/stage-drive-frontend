@@ -225,9 +225,9 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
                     <Text strong ellipsis style={{ fontSize: 14, lineHeight: '18px' }}>
                       {profileName || 'Профіль'}
                     </Text>
-                    {/* <Text type="secondary" ellipsis style={{ fontSize: 12, lineHeight: '16px' }}>
+                    <Text type="secondary" ellipsis style={{ fontSize: 12, lineHeight: '16px' }}>
                       {profileRole}
-                    </Text> */}
+                    </Text>
                   </Flex>
                 </Flex>
               </Button>
