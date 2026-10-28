@@ -1,12 +1,23 @@
 import { App, Button, Checkbox, Col, Flex, Form, Input, Row, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserOutlined, LockOutlined, MailOutlined, BankOutlined } from '@ant-design/icons';
-import { useRegisterMutation, type RegisterRequest } from '@/store/api/endpoints/authApi';
+import {
+  useCheckRegistrationEmailMutation,
+  useRegisterMutation,
+  type RegisterRequest,
+} from '@/store/api/endpoints/authApi';
 import { PhoneInput } from '@/shared/components/PhoneInput';
 import { normalizeUkrainianPhone, validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
 import { AuthSplitLayout } from '@/modules/auth/components/AuthSplitLayout';
 
 const { Title, Paragraph, Text } = Typography;
+
+const emailFieldMessage = (error: unknown) => {
+  const data = (
+    error as { data?: { message?: string; errors?: { field?: string; message?: string }[] } }
+  ).data;
+  return data?.errors?.find((item) => item.field === 'email')?.message || data?.message;
+};
 
 export const RegisterForm = () => {
   const [form] = Form.useForm();
@@ -14,6 +25,26 @@ export const RegisterForm = () => {
   const { message } = App.useApp();
 
   const [register, { isLoading }] = useRegisterMutation();
+  const [checkEmail] = useCheckRegistrationEmailMutation();
+
+  const onEmailBlur = async () => {
+    const email = String(form.getFieldValue('email') ?? '').trim();
+    if (!email) return;
+
+    try {
+      await form.validateFields(['email']);
+    } catch {
+      return;
+    }
+
+    try {
+      await checkEmail({ email }).unwrap();
+    } catch (error: unknown) {
+      const apiMessage = emailFieldMessage(error);
+      if (!apiMessage) return;
+      form.setFields([{ name: 'email', errors: [apiMessage] }]);
+    }
+  };
 
   const onFinish = async (values: RegisterRequest) => {
     try {
@@ -41,6 +72,12 @@ export const RegisterForm = () => {
           };
         }
       ).data?.message;
+
+      const emailMessage = emailFieldMessage(err);
+      if (emailMessage) {
+        form.setFields([{ name: 'email', errors: [emailMessage] }]);
+        return;
+      }
 
       message.error(apiMessage || 'Помилка реєстрації');
     }
@@ -151,7 +188,7 @@ export const RegisterForm = () => {
             },
           ]}
         >
-          <Input prefix={<MailOutlined />} placeholder="example@autoschool.com" />
+          <Input prefix={<MailOutlined />} placeholder="example@autoschool.com" onBlur={onEmailBlur} />
         </Form.Item>
 
         {/* PHONE */}

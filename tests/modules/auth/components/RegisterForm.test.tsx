@@ -3,9 +3,10 @@ import { vi } from 'vitest';
 import { fireEvent, renderWithProviders, screen, waitFor } from '../../../test-utils';
 import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 
-const { mockRegister, mockNavigate } = vi.hoisted(() => ({
+const { mockRegister, mockNavigate, mockCheckEmail } = vi.hoisted(() => ({
   mockRegister: vi.fn(),
   mockNavigate: vi.fn(),
+  mockCheckEmail: vi.fn(),
 }));
 
 vi.mock('@/store/api/endpoints/authApi', async (importOriginal) => {
@@ -13,6 +14,7 @@ vi.mock('@/store/api/endpoints/authApi', async (importOriginal) => {
   return {
     ...actual,
     useRegisterMutation: () => [mockRegister, { isLoading: false }],
+    useCheckRegistrationEmailMutation: () => [mockCheckEmail, { isLoading: false }],
   };
 });
 
@@ -47,6 +49,8 @@ describe('RegisterForm', () => {
   beforeEach(() => {
     mockRegister.mockReset();
     mockNavigate.mockReset();
+    mockCheckEmail.mockReset();
+    mockCheckEmail.mockReturnValue({ unwrap: () => Promise.resolve({ available: true }) });
   });
 
   it('renders the registration form', () => {
@@ -55,6 +59,25 @@ describe('RegisterForm', () => {
     expect(screen.getByText('Реєстрація автошколи')).toBeInTheDocument();
     expect(screen.getByLabelText('Назва автошколи')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Зареєструватися' })).toBeInTheDocument();
+  });
+
+  it('shows the backend message under email when the address is already taken', async () => {
+    const user = userEvent.setup();
+    mockCheckEmail.mockReturnValue({
+      unwrap: () =>
+        Promise.reject({
+          data: {
+            errors: [{ field: 'email', message: 'Користувач з таким email уже існує.' }],
+          },
+        }),
+    });
+    renderWithProviders(<RegisterForm />);
+
+    await user.type(screen.getByLabelText('Email'), 'owner@example.com');
+    await user.tab();
+
+    expect(await screen.findByText('Користувач з таким email уже існує.')).toBeInTheDocument();
+    expect(mockCheckEmail).toHaveBeenCalledWith({ email: 'owner@example.com' });
   });
 
   it('shows a validation error when passwords do not match', async () => {
