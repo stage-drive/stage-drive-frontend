@@ -10,19 +10,64 @@ import {
   UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
 import { BaseLayout } from '@/layouts/BaseLayout';
+import type { AppNavItem } from '@/layouts/types';
 
-const studentMenuItems: MenuProps['items'] = [
-  { key: '/student/dashboard', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/student/schedule', icon: <CalendarOutlined />, label: 'Мій розклад' },
-  { key: '/student/theory', icon: <BookOutlined />, label: 'Теоретичний курс' },
-  { key: '/student/tests', icon: <FileTextOutlined />, label: 'Тести' },
-  { key: '/student/practice', icon: <CarOutlined />, label: 'Практичні заняття' },
-  { key: '/student/progress', icon: <RiseOutlined />, label: 'Мій прогрес' },
-  { key: '/student/payments', icon: <DollarOutlined />, label: 'Оплати' },
-  { key: '/student/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-  { key: '/student/profile', icon: <UserOutlined />, label: 'Профіль' },
+const studentMenuItems: AppNavItem[] = [
+  {
+    key: '/student/dashboard',
+    icon: <HomeOutlined />,
+    label: 'Головна',
+    description: 'Огляд вашого навчання',
+  },
+  {
+    key: '/student/schedule',
+    icon: <CalendarOutlined />,
+    label: 'Мій розклад',
+    description: 'Ваш розклад занять',
+  },
+  {
+    key: '/student/theory',
+    icon: <BookOutlined />,
+    label: 'Теоретичний курс',
+    description: 'Матеріали теоретичного курсу',
+  },
+  {
+    key: '/student/tests',
+    icon: <FileTextOutlined />,
+    label: 'Тести',
+    description: 'Тести з правил дорожнього руху',
+  },
+  {
+    key: '/student/practice',
+    icon: <CarOutlined />,
+    label: 'Практичні заняття',
+    description: 'Ваші практичні заняття з водіння',
+  },
+  {
+    key: '/student/progress',
+    icon: <RiseOutlined />,
+    label: 'Мій прогрес',
+    description: 'Прогрес навчання та результати',
+  },
+  {
+    key: '/student/payments',
+    icon: <DollarOutlined />,
+    label: 'Оплати',
+    description: 'Статус оплат за навчання',
+  },
+  {
+    key: '/student/notifications',
+    icon: <BellOutlined />,
+    label: 'Сповіщення',
+    description: 'Ваші сповіщення та оновлення',
+  },
+  {
+    key: '/student/profile',
+    icon: <UserOutlined />,
+    label: 'Профіль',
+    description: 'Особисті дані та безпека акаунта',
+  },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 

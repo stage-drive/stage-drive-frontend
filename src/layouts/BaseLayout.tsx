@@ -30,6 +30,7 @@ import type { UserRole } from '@/store/api/types';
 import { baseApi } from '@/store/api/baseApi';
 import logoIcon from '@/assets/icons/logoIcon.svg';
 import logoFull from '@/assets/icons/logofull.png';
+import type { AppNavItem } from '@/layouts/types';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -44,7 +45,7 @@ const roleLabels: Record<UserRole, string> = {
 
 interface BaseLayoutProps {
   roleTitle: string;
-  menuItems: MenuProps['items'];
+  menuItems: AppNavItem[];
   routePrefix?: string;
   profilePath?: string;
 }
@@ -63,10 +64,27 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const { data: user } = useGetMeQuery();
   const profileName = user ? `${user.firstName} ${user.lastName}` : '';
   const profileRole = user ? roleLabels[user.role] : roleTitle;
-  const navigationItems = menuItems?.filter((item) => !item || !('key' in item) || item.key !== 'logout');
-  const logoutItem = menuItems?.find((item) => !!item && 'key' in item && item.key === 'logout');
+  const navigationItems = menuItems.filter((item) => item.key !== 'logout');
+  const logoutItem = menuItems.find((item) => item.key === 'logout');
+  const currentPage =
+    navigationItems.find((item) => item.key === location.pathname) ??
+    navigationItems.find((item) => location.pathname.startsWith(`${item.key}/`));
+  const pageTitle = currentPage?.label ?? roleTitle;
+  const pageDescription = currentPage?.description;
   const notificationsPath = routePrefix ? `${routePrefix}/notifications` : '/notifications';
   const profilePath = profilePathOverride || (routePrefix ? `${routePrefix}/profile` : '/profile');
+
+  const menuPropsItems: MenuProps['items'] = navigationItems.map(
+    ({ key, icon, label, danger }) => ({
+      key,
+      icon,
+      label,
+      danger,
+    }),
+  );
+  const logoutMenuItems: MenuProps['items'] = logoutItem
+    ? [{ key: logoutItem.key, icon: logoutItem.icon, label: logoutItem.label, danger: logoutItem.danger }]
+    : undefined;
 
   const {
     token: { colorBgContainer, colorBgLayout, borderRadiusLG },
@@ -146,16 +164,16 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
             theme="dark"
             mode="inline"
             selectedKeys={[location.pathname]}
-            items={navigationItems}
+            items={menuPropsItems}
             onClick={handleMenuClick}
             style={{ flex: 'none' }}
           />
-          {logoutItem ? (
+          {logoutMenuItems ? (
             <Menu
               theme="dark"
               mode="inline"
               selectable={false}
-              items={[logoutItem]}
+              items={logoutMenuItems}
               onClick={handleMenuClick}
               style={{ flex: 'none', marginTop: 'auto', marginBottom: 16 }}
             />
@@ -182,9 +200,16 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
           }}
         >
           <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-            <Text strong style={{ fontSize: 16 }}>
-              {roleTitle}
-            </Text>
+            <Flex vertical style={{ minWidth: 0, maxWidth: '50%' }}>
+              <Text strong ellipsis style={{ fontSize: 16, lineHeight: '22px' }}>
+                {pageTitle}
+              </Text>
+              {pageDescription ? (
+                <Text type="secondary" ellipsis style={{ fontSize: 12, lineHeight: '16px' }}>
+                  {pageDescription}
+                </Text>
+              ) : null}
+            </Flex>
             <Space size={16} align="center">
               <Flex align="center" gap={8}>
                 <Text>Темна тема</Text>

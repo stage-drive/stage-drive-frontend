@@ -26,16 +26,26 @@ import {
 import { baseApi } from '@/store/api/baseApi';
 import { resolveMediaUrl } from '@/shared/utils/resolveMediaUrl';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
+
+const MAX_LOGO_SIZE_BYTES = 2 * 1024 * 1024;
+const ACCEPTED_LOGO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 interface ApiError {
   data?: {
     message?: string | string[];
+    statusCode?: number;
   };
+  status?: number;
 }
 
 const getErrorMessage = (error: unknown, fallback: string) => {
-  const message = (error as ApiError).data?.message;
+  const apiError = error as ApiError;
+  const status = apiError.status ?? apiError.data?.statusCode;
+  if (status === 413) {
+    return 'Файл занадто великий. Оберіть логотип до 2 МБ';
+  }
+  const message = apiError.data?.message;
   return Array.isArray(message) ? message.join(', ') : message || fallback;
 };
 
@@ -68,9 +78,19 @@ export const SchoolSettingsPage = () => {
     return () => URL.revokeObjectURL(previewUrl);
   }, [logoFile]);
 
-  const onSelectLogo: UploadProps['onChange'] = ({ file }) => {
-    const imageFile = file.originFileObj ?? (file instanceof File ? file : undefined);
-    if (imageFile) setLogoFile(imageFile);
+  const beforeUploadLogo: UploadProps['beforeUpload'] = (file) => {
+    if (!ACCEPTED_LOGO_TYPES.includes(file.type)) {
+      message.error('Доступні формати: JPG, PNG, WEBP або GIF');
+      return Upload.LIST_IGNORE;
+    }
+
+    if (file.size > MAX_LOGO_SIZE_BYTES) {
+      message.error('Логотип має бути не більше 2 МБ');
+      return Upload.LIST_IGNORE;
+    }
+
+    setLogoFile(file);
+    return false;
   };
 
   const onSave = async (values: { name: string }) => {
@@ -116,13 +136,6 @@ export const SchoolSettingsPage = () => {
 
   return (
     <Flex vertical gap={24} style={{ maxWidth: 760 }}>
-      <Flex vertical gap={4}>
-        <Title level={3} style={{ margin: 0 }}>
-          Автошкола
-        </Title>
-        <Text type="secondary">Назва і логотип школи</Text>
-      </Flex>
-
       <Card variant="borderless" style={{ background: token.colorFillAlter }}>
         <Flex align="center" gap={20} wrap>
           <Avatar
@@ -135,15 +148,17 @@ export const SchoolSettingsPage = () => {
             <Text strong>{organization.name}</Text>
             <Text type="secondary">Часовий пояс: {organization.timezone}</Text>
             <Upload
-              accept="image/*"
+              accept={ACCEPTED_LOGO_TYPES.join(',')}
               showUploadList={false}
-              beforeUpload={() => false}
-              onChange={onSelectLogo}
+              beforeUpload={beforeUploadLogo}
             >
               <Button icon={<UploadOutlined />}>
                 {logoFile ? 'Логотип обрано' : 'Завантажити логотип'}
               </Button>
             </Upload>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              JPG, PNG, WEBP або GIF, до 2 МБ
+            </Text>
           </Flex>
         </Flex>
       </Card>

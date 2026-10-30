@@ -69,7 +69,6 @@ describe('ProfilePage', () => {
   it('renders the current account and editable profile fields', () => {
     renderWithProviders(<ProfilePage />);
 
-    expect(screen.getByRole('heading', { name: 'Профіль' })).toBeInTheDocument();
     expect(screen.getByText('user@example.com')).toBeInTheDocument();
     expect(screen.getByLabelText("Ім'я")).toHaveValue('Олена');
     expect(screen.getByLabelText('Прізвище')).toHaveValue('Коваль');

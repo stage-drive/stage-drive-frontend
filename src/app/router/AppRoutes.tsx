@@ -18,6 +18,7 @@ import { StudentDashboardPage } from '@/modules/dashboard/pages/StudentDashboard
 import { TeacherDashboardPage } from '@/modules/dashboard/pages/TeacherDashboardPage';
 import { ProfilePage } from '@/modules/profile/pages/ProfilePage';
 import { SchoolSettingsPage } from '@/modules/organization/pages/SchoolSettingsPage';
+import { StudentCardPage } from '@/modules/students/pages/StudentCardPage';
 import { StudentsPage } from '@/modules/students/pages/StudentsPage';
 import { InviteAdminPage } from '@/modules/invitations/pages/InviteAdminPage';
 import { InviteMemberPage } from '@/modules/invitations/pages/InviteMemberPage';
@@ -69,6 +70,7 @@ export const AppRoutes = () => {
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<InviteMemberPage />} />
           <Route path="/admin/students" element={<StudentsPage />} />
+          <Route path="/admin/students/:id" element={<StudentCardPage />} />
           <Route path="/admin/groups" element={<PlaceholderPage title="Навчальні групи" />} />
           <Route path="/admin/cars" element={<PlaceholderPage title="Автопарк" />} />
           <Route path="/admin/schedule" element={<PlaceholderPage title="Розклад" />} />

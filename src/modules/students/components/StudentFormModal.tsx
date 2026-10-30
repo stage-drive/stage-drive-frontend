@@ -1,14 +1,14 @@
 import React from 'react';
-import { Button, Col, Flex, Form, Input, Modal, Row, Select } from 'antd';
+import { Button, Col, DatePicker, Flex, Form, Input, Modal, Row, Select } from 'antd';
 import type { FormInstance } from 'antd';
+import type { Dayjs } from 'dayjs';
 import { PhoneInput } from '@/shared/components/PhoneInput';
 import { validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
+import { STUDENT_CATEGORIES, TRANSMISSION_LABELS } from '@/modules/students/constants';
 
-const studentCategoryOptions = ['A', 'B', 'C', 'D', 'BE', 'CE', 'DE'];
-const gearboxOptions = [
-  { value: 'MANUAL', label: 'Механіка' },
-  { value: 'AUTOMATIC', label: 'Автомат' },
-];
+const gearboxOptions = (Object.keys(TRANSMISSION_LABELS) as Array<keyof typeof TRANSMISSION_LABELS>).map(
+  (value) => ({ value, label: TRANSMISSION_LABELS[value] }),
+);
 
 export interface StudentFormValues {
   firstName: string;
@@ -18,6 +18,9 @@ export interface StudentFormValues {
   category?: string;
   transmission?: 'MANUAL' | 'AUTOMATIC';
   groupId?: string;
+  birthDate?: Dayjs | null;
+  address?: string;
+  contractNumber?: string;
 }
 
 interface StudentFormModalProps {
@@ -29,6 +32,7 @@ interface StudentFormModalProps {
   title: string;
   okText: string;
   lockEmail?: boolean;
+  showProfileDetails?: boolean;
   groupOptions?: { value: string; label: string }[];
 }
 
@@ -41,6 +45,7 @@ export const StudentFormModal: React.FC<StudentFormModalProps> = ({
   title,
   okText,
   lockEmail = false,
+  showProfileDetails = false,
   groupOptions,
 }) => (
   <Modal
@@ -102,7 +107,7 @@ export const StudentFormModal: React.FC<StudentFormModalProps> = ({
           >
             <Select
               placeholder="Оберіть категорію"
-              options={studentCategoryOptions.map((item) => ({ value: item, label: item }))}
+              options={STUDENT_CATEGORIES.map((item) => ({ value: item, label: item }))}
             />
           </Form.Item>
         </Col>
@@ -115,6 +120,25 @@ export const StudentFormModal: React.FC<StudentFormModalProps> = ({
             <Select placeholder="Оберіть коробку передач" options={gearboxOptions} />
           </Form.Item>
         </Col>
+        {showProfileDetails ? (
+          <>
+            <Col span={12}>
+              <Form.Item label="Дата народження" name="birthDate">
+                <DatePicker style={{ width: '100%' }} format="DD.MM.YYYY" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Номер договору" name="contractNumber">
+                <Input placeholder="Наприклад, ДГ-2026-0142" allowClear />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item label="Адреса" name="address">
+                <Input.TextArea rows={2} placeholder="Місто, вулиця, будинок" allowClear />
+              </Form.Item>
+            </Col>
+          </>
+        ) : null}
         {groupOptions && (
           <Col span={12}>
             <Form.Item label="Навчальна група" name="groupId">

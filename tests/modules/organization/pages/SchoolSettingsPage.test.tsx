@@ -50,7 +50,6 @@ describe('SchoolSettingsPage', () => {
   it('shows the school name and timezone', () => {
     renderWithProviders(<SchoolSettingsPage />);
 
-    expect(screen.getByRole('heading', { name: 'Автошкола' })).toBeInTheDocument();
     expect(screen.getByLabelText('Назва')).toHaveValue('Автошкола «Драйв»');
     expect(screen.getByText('Часовий пояс: Europe/Kyiv')).toBeInTheDocument();
   });
@@ -72,6 +71,28 @@ describe('SchoolSettingsPage', () => {
     const formData = mockUpdateOrganization.mock.calls[0][0] as FormData;
     expect(formData.get('name')).toBe('Нова школа');
     expect(formData.get('logo')).toBeInstanceOf(Blob);
+  });
+
+  it('rejects a logo larger than 2 MB before saving', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<SchoolSettingsPage />);
+
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['logo'], 'large-logo.png', { type: 'image/png' });
+    Object.defineProperty(file, 'size', { value: 2 * 1024 * 1024 + 1 });
+    await user.upload(input, file);
+
+    expect(await screen.findByText('Логотип має бути не більше 2 МБ')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Завантажити логотип/ })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Зберегти зміни' }));
+
+    await waitFor(() => {
+      expect(mockUpdateOrganization).toHaveBeenCalledTimes(1);
+    });
+
+    const formData = mockUpdateOrganization.mock.calls[0][0] as FormData;
+    expect(formData.get('logo')).toBeNull();
   });
 
   it('deletes the school after confirmation and returns to login', async () => {

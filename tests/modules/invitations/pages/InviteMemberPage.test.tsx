@@ -40,7 +40,7 @@ describe('InviteMemberPage', () => {
     const user = userEvent.setup();
     renderWithProviders(<InviteMemberPage />);
 
-    expect(screen.getByRole('heading', { name: 'Користувачі' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Додати учасника/ })).toBeInTheDocument();
 
     // 1. Открываем модалку
     await user.click(screen.getByRole('button', { name: /Додати учасника/ }));

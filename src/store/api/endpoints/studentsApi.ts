@@ -1,7 +1,14 @@
 import { baseApi } from '@/store/api/baseApi';
 
 export type StudentTransmission = 'MANUAL' | 'AUTOMATIC';
-export type StudentCategory = 'A' | 'B' | 'C' | 'D' | 'BE' | 'CE' | 'DE';
+export type StudentCategory = 'A' | 'B' | 'C' | 'D';
+export type TrainingStatus =
+  | 'INVITED'
+  | 'ACTIVE'
+  | 'PRACTICE'
+  | 'GRADUATED'
+  | 'DROPPED'
+  | 'ARCHIVED';
 
 export interface CreateStudentRequest {
   firstName: string;
@@ -24,16 +31,29 @@ export interface CreatedStudentUser {
   organizationId: string;
 }
 
-export interface CreatedStudentProfile {
+export interface PracticeCar {
+  id: string;
+  plateNumber: string;
+  category: StudentCategory;
+  transmission: StudentTransmission;
+  status: 'AVAILABLE' | 'MAINTENANCE' | 'INACTIVE';
+  instructorId?: string | null;
+}
+
+export interface StudentProfile {
   id: string;
   userId: string;
   organizationId: string;
   groupId?: string | null;
   instructorId?: string | null;
   carId?: string | null;
+  car?: PracticeCar | null;
   category?: StudentCategory | null;
   transmission?: StudentTransmission | null;
-  trainingStatus: 'INVITED' | 'ACTIVE';
+  trainingStatus: TrainingStatus;
+  birthDate?: string | null;
+  address?: string | null;
+  contractNumber?: string | null;
 }
 
 export interface CreatedStudentInvitation {
@@ -55,7 +75,7 @@ export interface CreatedStudentInvitation {
 
 export interface CreateStudentResponse {
   user: CreatedStudentUser;
-  student: CreatedStudentProfile;
+  student: StudentProfile;
   invitation: CreatedStudentInvitation;
 }
 
@@ -72,6 +92,8 @@ export interface StudentListItem {
   role: 'STUDENT';
   status: StudentAccountStatus;
   organizationId: string;
+  category: StudentCategory | null;
+  transmission: StudentTransmission | null;
   createdAt: string;
 }
 
@@ -94,19 +116,9 @@ export interface StudentListResponse {
   };
 }
 
-export interface StudentCard extends StudentListItem {
+export interface StudentCard extends Omit<StudentListItem, 'category' | 'transmission'> {
   updatedAt: string;
-  student: {
-    id: string;
-    userId: string;
-    organizationId: string;
-    groupId?: string | null;
-    instructorId?: string | null;
-    carId?: string | null;
-    category: StudentCategory | null;
-    transmission: StudentTransmission | null;
-    trainingStatus: string;
-  } | null;
+  student: StudentProfile | null;
 }
 
 export interface UpdateStudentRequest {
@@ -115,6 +127,22 @@ export interface UpdateStudentRequest {
   phone?: string | null;
   category?: StudentCategory | null;
   transmission?: StudentTransmission | null;
+  birthDate?: string | null;
+  address?: string | null;
+  contractNumber?: string | null;
+}
+
+export interface AssignStudentGroupRequest {
+  groupId: string;
+}
+
+export interface GrantPracticeAccessRequest {
+  instructorId: string;
+  carId: string;
+}
+
+export interface UpdateTrainingStatusRequest {
+  status: TrainingStatus;
 }
 
 export const studentsApi = baseApi.injectEndpoints({
@@ -131,7 +159,7 @@ export const studentsApi = baseApi.injectEndpoints({
 
     getStudent: builder.query<StudentCard, string>({
       query: (id) => `students/${id}`,
-      providesTags: ['Student'],
+      providesTags: (_result, _error, id) => ['Student', { type: 'Student', id }],
     }),
 
     createStudent: builder.mutation<CreateStudentResponse, CreateStudentRequest>({
@@ -149,7 +177,43 @@ export const studentsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body,
       }),
-      invalidatesTags: ['Student'],
+      invalidatesTags: (_result, _error, { id }) => ['Student', { type: 'Student', id }],
+    }),
+
+    assignStudentGroup: builder.mutation<
+      StudentCard,
+      { id: string; body: AssignStudentGroupRequest }
+    >({
+      query: ({ id, body }) => ({
+        url: `students/${id}/group`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => ['Student', { type: 'Student', id }],
+    }),
+
+    grantPracticeAccess: builder.mutation<
+      StudentCard,
+      { id: string; body: GrantPracticeAccessRequest }
+    >({
+      query: ({ id, body }) => ({
+        url: `students/${id}/practice-access`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => ['Student', { type: 'Student', id }],
+    }),
+
+    updateStudentTrainingStatus: builder.mutation<
+      StudentCard,
+      { id: string; body: UpdateTrainingStatusRequest }
+    >({
+      query: ({ id, body }) => ({
+        url: `students/${id}/status`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => ['Student', { type: 'Student', id }],
     }),
 
     archiveStudent: builder.mutation<StudentCard, string>({
@@ -160,7 +224,7 @@ export const studentsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Student', 'Dashboard'],
     }),
 
-    getMyStudentProfile: builder.query<CreatedStudentProfile, void>({
+    getMyStudentProfile: builder.query<StudentProfile, void>({
       query: () => ({
         url: 'students/me',
         method: 'GET',
@@ -176,5 +240,8 @@ export const {
   useGetStudentsQuery,
   useGetStudentQuery,
   useUpdateStudentMutation,
+  useAssignStudentGroupMutation,
+  useGrantPracticeAccessMutation,
+  useUpdateStudentTrainingStatusMutation,
   useArchiveStudentMutation,
 } = studentsApi;
