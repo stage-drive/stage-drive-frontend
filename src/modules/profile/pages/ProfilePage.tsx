@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Alert, App, Card, Flex, Form, Skeleton, Typography } from 'antd';
+import { Alert, App, Card, Flex, Form, Skeleton } from 'antd';
 import type { UploadProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -23,8 +23,6 @@ import {
   type PasswordFormValues,
 } from '@/modules/profile/components/ChangePasswordForm';
 import { DeleteAccountSection } from '@/modules/profile/components/DeleteAccountSection';
-
-const { Title, Text } = Typography;
 
 interface ApiError {
   data?: {
@@ -137,12 +135,6 @@ export const ProfilePage = () => {
 
   return (
     <Flex vertical gap={24} style={{ maxWidth: 760 }}>
-      <Flex vertical gap={4}>
-        <Title level={3} style={{ margin: 0 }}>
-          Профіль
-        </Title>
-        <Text type="secondary">Особисті дані та безпека акаунта</Text>
-      </Flex>
       <ProfileAvatar
         firstName={user.firstName}
         lastName={user.lastName}

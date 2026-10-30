@@ -7,16 +7,46 @@ import {
   BankOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
 import { BaseLayout } from '@/layouts/BaseLayout';
+import type { AppNavItem } from '@/layouts/types';
 
-const ownerMenuItems: MenuProps['items'] = [
-  { key: '/owner/dashboard', icon: <HomeOutlined />, label: 'Головна' },
-  { key: '/owner/admins', icon: <UserSwitchOutlined />, label: 'Адміністратори' },
-  { key: '/owner/branches', icon: <BarChartOutlined />, label: 'Філії / Статистика' },
-  { key: '/owner/notifications', icon: <BellOutlined />, label: 'Сповіщення' },
-  { key: '/owner/profile', icon: <UserOutlined />, label: 'Профіль' },
-  { key: '/owner/school-settings', icon: <BankOutlined />, label: 'Автошкола' },
+const ownerMenuItems: AppNavItem[] = [
+  {
+    key: '/owner/dashboard',
+    icon: <HomeOutlined />,
+    label: 'Головна',
+    description: 'Огляд ключових показників автошколи',
+  },
+  {
+    key: '/owner/admins',
+    icon: <UserSwitchOutlined />,
+    label: 'Адміністратори',
+    description: 'Управління адміністраторами школи',
+  },
+  {
+    key: '/owner/branches',
+    icon: <BarChartOutlined />,
+    label: 'Філії / Статистика',
+    description: 'Філії та аналітика по школі',
+  },
+  {
+    key: '/owner/notifications',
+    icon: <BellOutlined />,
+    label: 'Сповіщення',
+    description: 'Ваші сповіщення та оновлення',
+  },
+  {
+    key: '/owner/profile',
+    icon: <UserOutlined />,
+    label: 'Профіль',
+    description: 'Особисті дані та безпека акаунта',
+  },
+  {
+    key: '/owner/school-settings',
+    icon: <BankOutlined />,
+    label: 'Автошкола',
+    description: 'Назва і логотип школи',
+  },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 

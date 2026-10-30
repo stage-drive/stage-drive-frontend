@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, App, Button, Flex, Form, Input, Select, Typography } from 'antd';
+import { Alert, App, Button, Flex, Form, Input, Select } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { formatUkrainianPhone, normalizeUkrainianPhone } from '@/shared/utils/ukrainianPhone';
@@ -7,6 +7,8 @@ import { AddStudentModal } from '@/modules/students/components/AddStudentModal';
 import { EditStudentModal } from '@/modules/students/components/EditStudentModal';
 import { type StudentFormValues } from '@/modules/students/components/StudentFormModal';
 import { StudentsTable } from '@/modules/students/components/StudentsTable';
+import { ACCOUNT_STATUS_LABELS } from '@/modules/students/constants';
+import { buildUpdateStudentBody, profileDetailsFromCard } from '@/modules/students/utils/studentProfileForm';
 import {
   useArchiveStudentMutation,
   useCreateStudentMutation,
@@ -19,16 +21,11 @@ import {
   type StudentSortBy,
 } from '@/store/api/endpoints/studentsApi';
 
-const { Title, Paragraph } = Typography;
-
 const PAGE_SIZE = 20;
 
-const statusOptions: { value: StudentAccountStatus; label: string }[] = [
-  { value: 'INVITED', label: 'Запрошений' },
-  { value: 'ACTIVE', label: 'Активний' },
-  { value: 'BLOCKED', label: 'Заблокований' },
-  { value: 'ARCHIVED', label: 'Архів' },
-];
+const statusOptions = (Object.keys(ACCOUNT_STATUS_LABELS) as StudentAccountStatus[]).map(
+  (value) => ({ value, label: ACCOUNT_STATUS_LABELS[value] }),
+);
 
 const sortFields: StudentSortBy[] = ['firstName', 'lastName', 'email', 'phone', 'status', 'createdAt'];
 
@@ -99,8 +96,8 @@ export const StudentsPage: React.FC = () => {
       lastName: student.lastName,
       email: student.email,
       phone: student.phone ? formatUkrainianPhone(student.phone) : undefined,
-      category: undefined,
-      transmission: undefined,
+      category: student.category ?? undefined,
+      transmission: student.transmission ?? undefined,
     });
     setEditingStudent(student);
   };
@@ -110,25 +107,17 @@ export const StudentsPage: React.FC = () => {
     editForm.setFieldsValue({
       category: studentCard.student?.category ?? undefined,
       transmission: studentCard.student?.transmission ?? undefined,
+      ...profileDetailsFromCard(studentCard),
     });
   }, [editingStudent, editForm, studentCard]);
 
   const onEditFinish = async (values: StudentFormValues) => {
     if (!editingStudent) return;
 
-    const categories: StudentCategory[] = ['A', 'B', 'C', 'D', 'BE', 'CE', 'DE'];
-    const category = categories.find((item) => item === values.category) ?? null;
-
     try {
       await updateStudent({
         id: editingStudent.id,
-        body: {
-          firstName: values.firstName.trim(),
-          lastName: values.lastName.trim(),
-          phone: values.phone ? normalizeUkrainianPhone(values.phone) : null,
-          category,
-          transmission: values.transmission ?? null,
-        },
+        body: buildUpdateStudentBody(values),
       }).unwrap();
       message.success('Дані студента збережено');
       setEditingStudent(null);
@@ -143,9 +132,9 @@ export const StudentsPage: React.FC = () => {
 
   const onDeleteStudent = (student: StudentListItem) => {
     modal.confirm({
-      title: 'Видалити студента?',
+      title: 'Архівувати студента?',
       content: `${student.lastName} ${student.firstName} буде архівовано. Заняття й оплати залишаться в системі.`,
-      okText: 'Видалити',
+      okText: 'Архівувати',
       cancelText: 'Скасувати',
       okButtonProps: { danger: true },
       onOk: async () => {
@@ -156,7 +145,9 @@ export const StudentsPage: React.FC = () => {
         } catch (error: unknown) {
           const apiMessage = (error as { data?: { message?: string | string[] } }).data?.message;
           message.error(
-            Array.isArray(apiMessage) ? apiMessage.join(', ') : apiMessage || 'Не вдалося видалити студента'
+            Array.isArray(apiMessage)
+              ? apiMessage.join(', ')
+              : apiMessage || 'Не вдалося архівувати студента'
           );
         } finally {
           setDeletingId(null);
@@ -176,41 +167,32 @@ export const StudentsPage: React.FC = () => {
 
   return (
     <Flex vertical>
-      <Flex align="center" justify="space-between" wrap gap={16}>
-        <Flex vertical>
-          <Title level={2} style={{ margin: 0 }}>
-            Студенти
-          </Title>
-          <Paragraph type="secondary" style={{ margin: '8px 0 0' }}>
-            Учні вашої автошколи
-          </Paragraph>
+      <Flex align="center" justify="space-between" wrap gap={12}>
+        <Flex gap={12} wrap>
+          <Input.Search
+            allowClear
+            placeholder="Пошук за ПІБ, email або телефоном"
+            onSearch={(value) => {
+              setSearch(value.trim());
+              setPage(1);
+            }}
+            style={{ width: 320 }}
+          />
+          <Select
+            allowClear
+            placeholder="Статус акаунта"
+            value={status}
+            options={statusOptions}
+            onChange={(value) => {
+              setStatus(value);
+              setPage(1);
+            }}
+            style={{ width: 200 }}
+          />
         </Flex>
         <Button type="primary" icon={<PlusOutlined />} onClick={openAddStudentModal}>
           Додати студента
         </Button>
-      </Flex>
-
-      <Flex gap={12} wrap style={{ marginTop: 24 }}>
-        <Input.Search
-          allowClear
-          placeholder="Пошук за ПІБ, email або телефоном"
-          onSearch={(value) => {
-            setSearch(value.trim());
-            setPage(1);
-          }}
-          style={{ width: 320 }}
-        />
-        <Select
-          allowClear
-          placeholder="Статус акаунта"
-          value={status}
-          options={statusOptions}
-          onChange={(value) => {
-            setStatus(value);
-            setPage(1);
-          }}
-          style={{ width: 200 }}
-        />
       </Flex>
 
       {error && (

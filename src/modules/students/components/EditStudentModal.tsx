@@ -17,5 +17,6 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({ studentName,
     title={studentName ? `Редагувати студента — ${studentName}` : 'Редагувати студента'}
     okText="Зберегти"
     lockEmail
+    showProfileDetails
   />
 );
