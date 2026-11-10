@@ -1,6 +1,7 @@
 import {
   HomeOutlined,
   CalendarOutlined,
+  CarFilled,
   CarOutlined,
   TeamOutlined,
   BellOutlined,
@@ -28,6 +29,12 @@ const instructorMenuItems: AppNavItem[] = [
     icon: <CarOutlined />,
     label: 'Практичні заняття',
     description: 'Практичні заняття з водіння',
+  },
+  {
+    key: '/instructor/cars',
+    icon: <CarFilled />,
+    label: 'Мій автомобіль',
+    description: 'Автомобілі, закріплені за вами',
   },
   {
     key: '/instructor/my-students',

@@ -39,6 +39,7 @@ const verifiedInvitation = {
 
 describe('AcceptInvitationPage', () => {
   beforeEach(() => {
+    localStorage.clear();
     mockActivate.mockReset();
     mockNavigate.mockReset();
     mockVerifyQuery.mockReset();
@@ -100,6 +101,8 @@ describe('AcceptInvitationPage', () => {
     fireEvent.change(screen.getByLabelText('Підтвердіть пароль'), {
       target: { value: 'SecurePassword123!' },
     });
+    localStorage.setItem('token', 'admin-token');
+    localStorage.setItem('refreshToken', 'admin-refresh');
     await user.click(screen.getByRole('button', { name: 'Активувати акаунт' }));
 
     await waitFor(() => {
@@ -109,6 +112,8 @@ describe('AcceptInvitationPage', () => {
         passwordConfirmation: 'SecurePassword123!',
       });
     });
+    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
     expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
   }, 10000);
 });

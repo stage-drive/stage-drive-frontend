@@ -1,6 +1,8 @@
 import { App, Button, Flex, Form, Input, Result, Spin, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { baseApi } from '@/store/api/baseApi';
 import {
   useActivateAccountMutation,
   useVerifyInvitationTokenQuery,
@@ -54,6 +56,7 @@ export const AcceptInvitationPage = () => {
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { message } = App.useApp();
 
   const token = searchParams.get('token') ?? '';
@@ -81,6 +84,10 @@ export const AcceptInvitationPage = () => {
       }).unwrap();
 
       message.success('Акаунт активовано. Тепер увійдіть у систему.');
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      dispatch(baseApi.util.resetApiState());
+      window.dispatchEvent(new Event('auth-change'));
 
       navigate('/login', {
         replace: true,
