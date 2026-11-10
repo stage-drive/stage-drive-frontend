@@ -18,28 +18,39 @@ import { EditStudentModal } from '@/modules/students/components/EditStudentModal
 import { PracticeAccessModal } from '@/modules/students/components/PracticeAccessModal';
 import { StudentCardActions } from '@/modules/students/components/StudentCardActions';
 import { StudentCardHeader } from '@/modules/students/components/StudentCardHeader';
+import { TrainingStatusModal } from '@/modules/students/components/TrainingStatusModal';
 import { type StudentFormValues } from '@/modules/students/components/StudentFormModal';
 import { TRAINING_STATUS_LABELS, TRANSMISSION_LABELS } from '@/modules/students/constants';
-import { getApiErrorMessage } from '@/modules/students/utils/studentActions';
+import { getApiErrorMessage, trainingStatusOptions } from '@/modules/students/utils/studentActions';
 import {
   buildUpdateStudentBody,
   formatProfileDate,
   profileDetailsFromCard,
 } from '@/modules/students/utils/studentProfileForm';
-import { useGetGroupsQuery } from '@/store/api/endpoints/groupsApi';
+import { useGetGroupStudentsQuery, useGetGroupsQuery } from '@/store/api/endpoints/groupsApi';
 import {
   useArchiveStudentMutation,
   useAssignStudentGroupMutation,
   useGetStudentQuery,
   useGrantPracticeAccessMutation,
   useUpdateStudentMutation,
+  useUpdateStudentTrainingStatusMutation,
+  type TrainingStatus,
 } from '@/store/api/endpoints/studentsApi';
 import { useGetOrganizationMembersQuery } from '@/store/api/endpoints/usersApi';
 import { formatUkrainianPhone } from '@/shared/utils/ukrainianPhone';
 
 const { Text } = Typography;
 
-export const StudentCardPage = () => {
+interface StudentCardPageProps {
+  mode?: 'manage' | 'view';
+  listPath?: string;
+}
+
+export const StudentCardPage = ({
+  mode = 'manage',
+  listPath = '/admin/students',
+}: StudentCardPageProps) => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { message, modal } = App.useApp();
@@ -47,13 +58,16 @@ export const StudentCardPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isGroupOpen, setIsGroupOpen] = useState(false);
   const [isPracticeOpen, setIsPracticeOpen] = useState(false);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
 
   const { data: card, isLoading, isError } = useGetStudentQuery(id, { skip: !id });
-  const { data: groupsData } = useGetGroupsQuery();
+  const groupId = card?.student?.groupId ?? '';
+  const { data: groupsData } = useGetGroupsQuery(undefined, { skip: mode !== 'manage' });
+  const { data: roster } = useGetGroupStudentsQuery(groupId, { skip: !groupId });
   const instructorId = card?.student?.instructorId;
   const { data: instructorsData } = useGetOrganizationMembersQuery(
     { role: 'INSTRUCTOR', status: 'ACTIVE', limit: 100 },
-    { skip: !instructorId },
+    { skip: mode !== 'manage' || !instructorId },
   );
 
   const [updateStudent, { isLoading: isSaving }] = useUpdateStudentMutation();
@@ -61,6 +75,8 @@ export const StudentCardPage = () => {
   const [grantPracticeAccess, { isLoading: isGrantingPractice }] =
     useGrantPracticeAccessMutation();
   const [archiveStudent, { isLoading: isArchiving }] = useArchiveStudentMutation();
+  const [updateTrainingStatus, { isLoading: isUpdatingStatus }] =
+    useUpdateStudentTrainingStatusMutation();
 
   useEffect(() => {
     if (!card || !isEditOpen) return;
@@ -75,7 +91,6 @@ export const StudentCardPage = () => {
     });
   }, [card, editForm, isEditOpen]);
 
-  const groupName = groupsData?.groups.find((group) => group.id === card?.student?.groupId)?.name;
   const instructor = instructorsData?.users.find((user) => user.id === instructorId);
 
   const onEditFinish = async (values: StudentFormValues) => {
@@ -116,6 +131,17 @@ export const StudentCardPage = () => {
     }
   };
 
+  const onChangeStatus = async (status: TrainingStatus) => {
+    if (!card) return;
+    try {
+      await updateTrainingStatus({ id: card.id, body: { status } }).unwrap();
+      message.success('Статус навчання змінено');
+      setIsStatusOpen(false);
+    } catch (error: unknown) {
+      message.error(getApiErrorMessage(error, 'Не вдалося змінити статус навчання'));
+    }
+  };
+
   const onArchive = () => {
     if (!card) return;
     modal.confirm({
@@ -128,7 +154,7 @@ export const StudentCardPage = () => {
         try {
           await archiveStudent(card.id).unwrap();
           message.success('Студента архівовано');
-          navigate('/admin/students');
+          navigate(listPath);
         } catch (error: unknown) {
           message.error(getApiErrorMessage(error, 'Не вдалося архівувати студента'));
         }
@@ -149,7 +175,7 @@ export const StudentCardPage = () => {
       <Flex vertical gap={16}>
         <Breadcrumb
           items={[
-            { title: <Link to="/admin/students">Студенти</Link> },
+            { title: <Link to={listPath}>Студенти</Link> },
             { title: 'Картка' },
           ]}
         />
@@ -160,12 +186,16 @@ export const StudentCardPage = () => {
 
   const profile = card.student;
   const practiceCar = profile?.car;
+  const groupFromList = groupsData?.groups.find((group) => group.id === profile?.groupId);
+  const groupName = roster?.group.name ?? groupFromList?.name;
+  const enrolledAt = roster?.students.find((student) => student.id === card.id)?.enrolledAt;
+  const estimatedEnd = roster?.group.endDate ?? groupFromList?.endDate ?? null;
 
   return (
     <Flex vertical gap={24}>
       <Breadcrumb
         items={[
-          { title: <Link to="/admin/students">Студенти</Link> },
+          { title: <Link to={listPath}>Студенти</Link> },
           { title: `${card.lastName} ${card.firstName}` },
         ]}
       />
@@ -174,14 +204,17 @@ export const StudentCardPage = () => {
         <Flex vertical gap={20}>
           <Flex align="flex-start" justify="space-between" gap={16} wrap>
             <StudentCardHeader card={card} />
-            <StudentCardActions
-              card={card}
-              isArchiving={isArchiving}
-              onEdit={() => setIsEditOpen(true)}
-              onAssignGroup={() => setIsGroupOpen(true)}
-              onPracticeAccess={() => setIsPracticeOpen(true)}
-              onArchive={onArchive}
-            />
+            {mode === 'manage' ? (
+              <StudentCardActions
+                card={card}
+                isArchiving={isArchiving}
+                onEdit={() => setIsEditOpen(true)}
+                onAssignGroup={() => setIsGroupOpen(true)}
+                onPracticeAccess={() => setIsPracticeOpen(true)}
+                onChangeStatus={() => setIsStatusOpen(true)}
+                onArchive={onArchive}
+              />
+            ) : null}
           </Flex>
 
           <Tabs
@@ -195,8 +228,25 @@ export const StudentCardPage = () => {
                       {new Date(card.createdAt).toLocaleDateString('uk-UA')}
                     </Descriptions.Item>
                     <Descriptions.Item label="Навчальна група">
-                      {groupName ?? (
-                        <Text type="secondary">Навчальну групу не призначено</Text>
+                      {groupName ??
+                        (profile?.groupId ? (
+                          'Групу призначено'
+                        ) : (
+                          <Text type="secondary">Навчальну групу не призначено</Text>
+                        ))}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Дата зарахування">
+                      {formatProfileDate(enrolledAt) ?? (
+                        <Text type="secondary">
+                          {profile?.groupId
+                            ? 'Дату зарахування ще не отримано'
+                            : 'Навчальну групу не призначено'}
+                        </Text>
+                      )}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Орієнтовна дата завершення">
+                      {formatProfileDate(estimatedEnd) ?? (
+                        <Text type="secondary">Дату завершення ще не вказано</Text>
                       )}
                     </Descriptions.Item>
                     <Descriptions.Item label="Дата народження">
@@ -250,7 +300,9 @@ export const StudentCardPage = () => {
                       <Descriptions.Item label="Інструктор">
                         {instructor
                           ? `${instructor.lastName} ${instructor.firstName}`
-                          : profile?.instructorId ?? (
+                          : profile?.instructorId
+                            ? 'Інструктора призначено'
+                            : (
                               <Text type="secondary">Інструктора не призначено</Text>
                             )}
                       </Descriptions.Item>
@@ -279,33 +331,44 @@ export const StudentCardPage = () => {
         </Flex>
       </Card>
 
-      <EditStudentModal
-        open={isEditOpen}
-        form={editForm}
-        isSending={isSaving}
-        studentName={`${card.lastName} ${card.firstName}`}
-        onClose={() => {
-          editForm.resetFields();
-          setIsEditOpen(false);
-        }}
-        onSubmit={onEditFinish}
-      />
+      {mode === 'manage' ? (
+        <>
+          <EditStudentModal
+            open={isEditOpen}
+            form={editForm}
+            isSending={isSaving}
+            studentName={`${card.lastName} ${card.firstName}`}
+            onClose={() => {
+              editForm.resetFields();
+              setIsEditOpen(false);
+            }}
+            onSubmit={onEditFinish}
+          />
 
-      <AssignGroupModal
-        open={isGroupOpen}
-        isSending={isAssigningGroup}
-        onClose={() => setIsGroupOpen(false)}
-        onSubmit={onAssignGroup}
-      />
+          <AssignGroupModal
+            open={isGroupOpen}
+            isSending={isAssigningGroup}
+            onClose={() => setIsGroupOpen(false)}
+            onSubmit={onAssignGroup}
+          />
 
-      <PracticeAccessModal
-        open={isPracticeOpen}
-        isSending={isGrantingPractice}
-        category={profile?.category}
-        transmission={profile?.transmission}
-        onClose={() => setIsPracticeOpen(false)}
-        onSubmit={onPracticeAccess}
-      />
+          <PracticeAccessModal
+            open={isPracticeOpen}
+            isSending={isGrantingPractice}
+            category={profile?.category}
+            transmission={profile?.transmission}
+            onClose={() => setIsPracticeOpen(false)}
+            onSubmit={onPracticeAccess}
+          />
+          <TrainingStatusModal
+            open={isStatusOpen}
+            isSending={isUpdatingStatus}
+            options={trainingStatusOptions(card)}
+            onClose={() => setIsStatusOpen(false)}
+            onSubmit={onChangeStatus}
+          />
+        </>
+      ) : null}
     </Flex>
   );
 };

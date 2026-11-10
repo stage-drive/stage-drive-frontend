@@ -163,7 +163,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
           <Menu
             theme="dark"
             mode="inline"
-            selectedKeys={[location.pathname]}
+            selectedKeys={[currentPage?.key ?? location.pathname]}
             items={menuPropsItems}
             onClick={handleMenuClick}
             style={{ flex: 'none' }}

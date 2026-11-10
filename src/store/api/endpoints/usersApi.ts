@@ -1,4 +1,5 @@
 import { baseApi } from '@/store/api/baseApi';
+import type { StudentCategory, StudentTransmission } from '@/store/api/endpoints/studentsApi';
 import type { UserRole } from '@/store/api/types';
 
 export type OrganizationMemberStatus = 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHIVED';
@@ -6,8 +7,8 @@ export type OrganizationMemberStatus = 'INVITED' | 'ACTIVE' | 'BLOCKED' | 'ARCHI
 export interface MemberCar {
   id: string;
   plateNumber: string;
-  category: 'A' | 'B' | 'C' | 'D';
-  transmission: 'MANUAL' | 'AUTOMATIC';
+  category: StudentCategory;
+  transmission: StudentTransmission;
   status: 'AVAILABLE' | 'MAINTENANCE' | 'INACTIVE';
 }
 

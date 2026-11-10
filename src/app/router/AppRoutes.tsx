@@ -18,7 +18,9 @@ import { StudentDashboardPage } from '@/modules/dashboard/pages/StudentDashboard
 import { TeacherDashboardPage } from '@/modules/dashboard/pages/TeacherDashboardPage';
 import { ProfilePage } from '@/modules/profile/pages/ProfilePage';
 import { SchoolSettingsPage } from '@/modules/organization/pages/SchoolSettingsPage';
+import { MyLearningPage } from '@/modules/students/pages/MyLearningPage';
 import { StudentCardPage } from '@/modules/students/pages/StudentCardPage';
+import { StudentStudySectionPage } from '@/modules/students/pages/StudentStudySectionPage';
 import { StudentsPage } from '@/modules/students/pages/StudentsPage';
 import { InviteAdminPage } from '@/modules/invitations/pages/InviteAdminPage';
 import { InviteMemberPage } from '@/modules/invitations/pages/InviteMemberPage';
@@ -91,7 +93,14 @@ export const AppRoutes = () => {
           <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
           <Route path="/teacher/profile" element={<ProfilePage />} />
           <Route path="/teacher/my-groups" element={<PlaceholderPage title="Мої групи" />} />
-          <Route path="/teacher/my-students" element={<PlaceholderPage title="Мої студенти" />} />
+          <Route
+            path="/teacher/my-students"
+            element={<StudentsPage mode="view" cardPathPrefix="/teacher/my-students" />}
+          />
+          <Route
+            path="/teacher/my-students/:id"
+            element={<StudentCardPage mode="view" listPath="/teacher/my-students" />}
+          />
           <Route path="/teacher/theory" element={<PlaceholderPage title="Теоретичний курс" />} />
           <Route path="/teacher/tests" element={<PlaceholderPage title="Тести" />} />
           <Route path="/teacher/attendance" element={<PlaceholderPage title="Відвідуваність" />} />
@@ -110,7 +119,11 @@ export const AppRoutes = () => {
           />
           <Route
             path="/instructor/my-students"
-            element={<PlaceholderPage title="Мої студенти" />}
+            element={<StudentsPage mode="view" cardPathPrefix="/instructor/my-students" />}
+          />
+          <Route
+            path="/instructor/my-students/:id"
+            element={<StudentCardPage mode="view" listPath="/instructor/my-students" />}
           />
           <Route
             path="/instructor/notifications"
@@ -124,10 +137,10 @@ export const AppRoutes = () => {
           <Route path="/student/dashboard" element={<StudentDashboardPage />} />
           <Route path="/student/profile" element={<ProfilePage />} />
           <Route path="/student/schedule" element={<PlaceholderPage title="Мій розклад" />} />
-          <Route path="/student/theory" element={<PlaceholderPage title="Теоретичний курс" />} />
-          <Route path="/student/tests" element={<PlaceholderPage title="Тести" />} />
-          <Route path="/student/practice" element={<PlaceholderPage title="Практичні заняття" />} />
-          <Route path="/student/progress" element={<PlaceholderPage title="Мій прогрес" />} />
+          <Route path="/student/theory" element={<StudentStudySectionPage section="theory" />} />
+          <Route path="/student/tests" element={<StudentStudySectionPage section="tests" />} />
+          <Route path="/student/practice" element={<StudentStudySectionPage section="practice" />} />
+          <Route path="/student/progress" element={<MyLearningPage />} />
           <Route path="/student/payments" element={<PlaceholderPage title="Оплати" />} />
           <Route path="/student/notifications" element={<PlaceholderPage title="Сповіщення" />} />
         </Route>

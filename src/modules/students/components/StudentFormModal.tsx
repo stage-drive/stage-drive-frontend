@@ -4,7 +4,7 @@ import type { FormInstance } from 'antd';
 import type { Dayjs } from 'dayjs';
 import { PhoneInput } from '@/shared/components/PhoneInput';
 import { validateUkrainianPhone } from '@/shared/utils/ukrainianPhone';
-import { STUDENT_CATEGORIES, TRANSMISSION_LABELS } from '@/modules/students/constants';
+import { CATEGORY_LABELS, STUDENT_CATEGORIES, TRANSMISSION_LABELS } from '@/modules/students/constants';
 
 const gearboxOptions = (Object.keys(TRANSMISSION_LABELS) as Array<keyof typeof TRANSMISSION_LABELS>).map(
   (value) => ({ value, label: TRANSMISSION_LABELS[value] }),
@@ -106,8 +106,13 @@ export const StudentFormModal: React.FC<StudentFormModalProps> = ({
             rules={[{ required: true, message: 'Оберіть категорію' }]}
           >
             <Select
+              showSearch
+              optionFilterProp="label"
               placeholder="Оберіть категорію"
-              options={STUDENT_CATEGORIES.map((item) => ({ value: item, label: item }))}
+              options={STUDENT_CATEGORIES.map((item) => ({
+                value: item,
+                label: CATEGORY_LABELS[item],
+              }))}
             />
           </Form.Item>
         </Col>
