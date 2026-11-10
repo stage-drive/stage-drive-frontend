@@ -1,7 +1,21 @@
 import { baseApi } from '@/store/api/baseApi';
 
 export type StudentTransmission = 'MANUAL' | 'AUTOMATIC';
-export type StudentCategory = 'A' | 'B' | 'C' | 'D';
+export type StudentCategory =
+  | 'A1'
+  | 'A'
+  | 'B1'
+  | 'B'
+  | 'BE'
+  | 'C1'
+  | 'C1E'
+  | 'C'
+  | 'CE'
+  | 'D1'
+  | 'D1E'
+  | 'D'
+  | 'DE'
+  | 'T';
 export type TrainingStatus =
   | 'INVITED'
   | 'ACTIVE'
@@ -224,7 +238,7 @@ export const studentsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Student', 'Dashboard'],
     }),
 
-    getMyStudentProfile: builder.query<StudentProfile, void>({
+    getMyStudentProfile: builder.query<StudentCard, void>({
       query: () => ({
         url: 'students/me',
         method: 'GET',

@@ -23,6 +23,11 @@ import {
 
 const PAGE_SIZE = 20;
 
+interface StudentsPageProps {
+  mode?: 'manage' | 'view';
+  cardPathPrefix?: string;
+}
+
 const statusOptions = (Object.keys(ACCOUNT_STATUS_LABELS) as StudentAccountStatus[]).map(
   (value) => ({ value, label: ACCOUNT_STATUS_LABELS[value] }),
 );
@@ -32,7 +37,10 @@ const sortFields: StudentSortBy[] = ['firstName', 'lastName', 'email', 'phone', 
 const isSortField = (value: string): value is StudentSortBy =>
   sortFields.includes(value as StudentSortBy);
 
-export const StudentsPage: React.FC = () => {
+export const StudentsPage: React.FC<StudentsPageProps> = ({
+  mode = 'manage',
+  cardPathPrefix = '/admin/students',
+}) => {
   const [addForm] = Form.useForm<StudentFormValues>();
   const [editForm] = Form.useForm<StudentFormValues>();
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -190,9 +198,11 @@ export const StudentsPage: React.FC = () => {
             style={{ width: 200 }}
           />
         </Flex>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openAddStudentModal}>
-          Додати студента
-        </Button>
+        {mode === 'manage' ? (
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAddStudentModal}>
+            Додати студента
+          </Button>
+        ) : null}
       </Flex>
 
       {error && (
@@ -211,11 +221,15 @@ export const StudentsPage: React.FC = () => {
         pageSize={PAGE_SIZE}
         total={data?.pagination.total ?? 0}
         deletingId={deletingId}
+        cardPathPrefix={cardPathPrefix}
+        mode={mode}
         onChange={onTableChange}
         onEdit={openEditStudent}
         onDelete={onDeleteStudent}
       />
 
+      {mode === 'manage' ? (
+      <>
       <AddStudentModal
         open={isAddOpen}
         form={addForm}
@@ -238,6 +252,8 @@ export const StudentsPage: React.FC = () => {
         }}
         onSubmit={onEditFinish}
       />
+      </>
+      ) : null}
     </Flex>
   );
 };

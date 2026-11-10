@@ -1,11 +1,15 @@
 import { useState, type Key } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Dropdown, Table, theme } from 'antd';
+import { Button, Card, Dropdown, Table, Tag, theme } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { DeleteOutlined, EditOutlined, EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
 import { formatUkrainianPhone } from '@/shared/utils/ukrainianPhone';
-import type { StudentListItem } from '@/store/api/endpoints/studentsApi';
-import { TRANSMISSION_LABELS } from '@/modules/students/constants';
+import type { StudentAccountStatus, StudentListItem } from '@/store/api/endpoints/studentsApi';
+import {
+  ACCOUNT_STATUS_COLORS,
+  ACCOUNT_STATUS_LABELS,
+  TRANSMISSION_LABELS,
+} from '@/modules/students/constants';
 
 const columns: TableColumnsType<StudentListItem> = [
   { title: "Ім'я", dataIndex: 'firstName', key: 'firstName', sorter: true },
@@ -31,6 +35,15 @@ const columns: TableColumnsType<StudentListItem> = [
     render: (transmission: StudentListItem['transmission']) =>
       transmission ? TRANSMISSION_LABELS[transmission] : '—',
   },
+  {
+    title: 'Статус акаунта',
+    dataIndex: 'status',
+    key: 'status',
+    sorter: true,
+    render: (status: StudentAccountStatus) => (
+      <Tag color={ACCOUNT_STATUS_COLORS[status]}>{ACCOUNT_STATUS_LABELS[status]}</Tag>
+    ),
+  },
 ];
 
 interface StudentsTableProps {
@@ -40,6 +53,8 @@ interface StudentsTableProps {
   pageSize: number;
   total: number;
   deletingId: string | null;
+  cardPathPrefix: string;
+  mode?: 'manage' | 'view';
   onChange: TableProps<StudentListItem>['onChange'];
   onEdit: (student: StudentListItem) => void;
   onDelete: (student: StudentListItem) => void;
@@ -52,6 +67,8 @@ export const StudentsTable = ({
   pageSize,
   total,
   deletingId,
+  cardPathPrefix,
+  mode = 'manage',
   onChange,
   onEdit,
   onDelete,
@@ -71,10 +88,14 @@ export const StudentsTable = ({
     >
       <Table<StudentListItem>
         rowKey="id"
-        rowSelection={{
-          selectedRowKeys,
-          onChange: setSelectedRowKeys,
-        }}
+        rowSelection={
+          mode === 'manage'
+            ? {
+                selectedRowKeys,
+                onChange: setSelectedRowKeys,
+              }
+            : undefined
+        }
         columns={[
           ...columns,
           {
@@ -87,17 +108,21 @@ export const StudentsTable = ({
                 menu={{
                   items: [
                     { key: 'view', icon: <EyeOutlined />, label: 'Переглянути' },
-                    { key: 'edit', icon: <EditOutlined />, label: 'Редагувати' },
-                    {
-                      key: 'archive',
-                      icon: <DeleteOutlined />,
-                      label: 'Архівувати',
-                      danger: true,
-                      disabled: student.status === 'ARCHIVED',
-                    },
+                    ...(mode === 'manage'
+                      ? [
+                          { key: 'edit', icon: <EditOutlined />, label: 'Редагувати' },
+                          {
+                            key: 'archive',
+                            icon: <DeleteOutlined />,
+                            label: 'Архівувати',
+                            danger: true,
+                            disabled: student.status === 'ARCHIVED',
+                          },
+                        ]
+                      : []),
                   ],
                   onClick: ({ key }) => {
-                    if (key === 'view') navigate(`/admin/students/${student.id}`);
+                    if (key === 'view') navigate(`${cardPathPrefix}/${student.id}`);
                     if (key === 'edit') onEdit(student);
                     if (key === 'archive') onDelete(student);
                   },

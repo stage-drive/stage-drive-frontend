@@ -47,8 +47,8 @@ const studentMenuItems: AppNavItem[] = [
   {
     key: '/student/progress',
     icon: <RiseOutlined />,
-    label: 'Мій прогрес',
-    description: 'Прогрес навчання та результати',
+    label: 'Моє навчання',
+    description: 'Група, інструктор, категорія і статус навчання',
   },
   {
     key: '/student/payments',

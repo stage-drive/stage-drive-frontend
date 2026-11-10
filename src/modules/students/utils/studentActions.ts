@@ -2,6 +2,21 @@ import type { StudentCard, TrainingStatus } from '@/store/api/endpoints/students
 
 const blockedGroupStatuses: TrainingStatus[] = ['ARCHIVED', 'DROPPED', 'GRADUATED'];
 
+const trainingStatusTransitions: Record<TrainingStatus, TrainingStatus[]> = {
+  INVITED: ['ACTIVE', 'DROPPED'],
+  ACTIVE: ['GRADUATED', 'DROPPED'],
+  PRACTICE: ['GRADUATED', 'DROPPED'],
+  GRADUATED: [],
+  DROPPED: [],
+  ARCHIVED: [],
+};
+
+export const trainingStatusOptions = (card: StudentCard): TrainingStatus[] => {
+  const trainingStatus = card.student?.trainingStatus;
+  if (!trainingStatus) return [];
+  return trainingStatusTransitions[trainingStatus];
+};
+
 export const canAssignGroup = (card: StudentCard) => {
   const trainingStatus = card.student?.trainingStatus;
   if (!trainingStatus) {
@@ -35,6 +50,19 @@ export const canGrantPracticeAccess = (card: StudentCard) => {
   }
   if (!profile.category || !profile.transmission) {
     return { enabled: false, reason: 'Спочатку вкажіть категорію та коробку передач' };
+  }
+  return { enabled: true };
+};
+
+export const canChangeTrainingStatus = (card: StudentCard) => {
+  if (!card.student) {
+    return { enabled: false, reason: 'Профіль студента ще не створено' };
+  }
+  if (card.student.trainingStatus === 'ARCHIVED' || card.status === 'ARCHIVED') {
+    return { enabled: false, reason: 'Студента вже архівовано' };
+  }
+  if (trainingStatusOptions(card).length === 0) {
+    return { enabled: false, reason: 'Цей статус можна змінити лише архівацією' };
   }
   return { enabled: true };
 };

@@ -9,11 +9,13 @@ import { StatsCard } from '@/modules/dashboard/components/StatsCard';
 import { formatLessonTime } from '@/modules/dashboard/components/formatLessonTime';
 import { OrganizationLogo } from '@/modules/organization/components/OrganizationLogo';
 import { useGetStudentDashboardQuery } from '@/store/api/endpoints/dashboardApi';
+import { useGetMyStudentProfileQuery } from '@/store/api/endpoints/studentsApi';
 
 const { Title, Text } = Typography;
 
 export const StudentDashboardPage = () => {
   const { data, isLoading, isError, refetch } = useGetStudentDashboardQuery();
+  const { data: profileCard } = useGetMyStudentProfileQuery();
 
   if (isLoading) return <DashboardPageSkeleton cards={2} />;
 
@@ -43,6 +45,15 @@ export const StudentDashboardPage = () => {
           <Text type="secondary">Вітаємо, у автошколі {data.organization.name}</Text>
         </Flex>
       </Flex>
+
+      {profileCard?.student && !profileCard.student.groupId ? (
+        <Alert
+          type="info"
+          showIcon
+          title="Вас ще не додано до навчальної групи."
+          description="Теоретичний курс і тести закриті, доки вас не додадуть до групи з призначеним курсом."
+        />
+      ) : null}
 
       <Row gutter={[16, 16]}>
         <DashboardCol xs={24} sm={12}>
@@ -89,7 +100,7 @@ export const StudentDashboardPage = () => {
         <DashboardRecordList
           items={data.groups}
           rowKey={(group) => group.id}
-          emptyText="Ви поки не зараховані до групи"
+          emptyText="Вас ще не додано до навчальної групи."
           renderItem={(group, divided) => (
             <DashboardRecord
               divided={divided}

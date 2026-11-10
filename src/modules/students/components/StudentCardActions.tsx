@@ -3,12 +3,14 @@ import {
   CarOutlined,
   DeleteOutlined,
   EditOutlined,
+  SwapOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import type { StudentCard } from '@/store/api/endpoints/studentsApi';
 import {
   canArchiveStudent,
   canAssignGroup,
+  canChangeTrainingStatus,
   canGrantPracticeAccess,
 } from '@/modules/students/utils/studentActions';
 
@@ -18,6 +20,7 @@ interface StudentCardActionsProps {
   onEdit: () => void;
   onAssignGroup: () => void;
   onPracticeAccess: () => void;
+  onChangeStatus: () => void;
   onArchive: () => void;
 }
 
@@ -27,10 +30,12 @@ export const StudentCardActions = ({
   onEdit,
   onAssignGroup,
   onPracticeAccess,
+  onChangeStatus,
   onArchive,
 }: StudentCardActionsProps) => {
   const assignGroup = canAssignGroup(card);
   const practiceAccess = canGrantPracticeAccess(card);
+  const trainingStatus = canChangeTrainingStatus(card);
   const archive = canArchiveStudent(card);
 
   return (
@@ -57,6 +62,13 @@ export const StudentCardActions = ({
             onClick={onPracticeAccess}
           >
             Відкрити доступ до практики
+          </Button>
+        </span>
+      </Tooltip>
+      <Tooltip title={trainingStatus.enabled ? undefined : trainingStatus.reason}>
+        <span>
+          <Button icon={<SwapOutlined />} disabled={!trainingStatus.enabled} onClick={onChangeStatus}>
+            Статус навчання
           </Button>
         </span>
       </Tooltip>
