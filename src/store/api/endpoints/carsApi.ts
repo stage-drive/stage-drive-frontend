@@ -22,13 +22,15 @@ export interface CarListItem {
   updatedAt: string;
 }
 
+export type CarSortBy = 'plateNumber' | 'category' | 'transmission' | 'createdAt';
+
 export interface CarsQuery {
   search?: string;
   category?: StudentCategory;
   transmission?: StudentTransmission;
   instructorId?: string;
   status?: CarStatus;
-  sortBy?: 'plateNumber' | 'category' | 'transmission' | 'createdAt';
+  sortBy?: CarSortBy;
   sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
@@ -44,6 +46,28 @@ export interface CarsResponse {
   };
 }
 
+export interface CreateCarRequest {
+  plateNumber: string;
+  category: StudentCategory;
+  transmission: StudentTransmission;
+  instructorId: string;
+}
+
+export interface UpdateCarRequest {
+  plateNumber?: string;
+  category?: StudentCategory;
+  transmission?: StudentTransmission;
+  instructorId?: string;
+}
+
+export interface UpdateCarStatusRequest {
+  status: CarStatus;
+}
+
+export interface AssignCarInstructorRequest {
+  instructorId: string | null;
+}
+
 export const carsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCars: builder.query<CarsResponse, CarsQuery | void>({
@@ -55,7 +79,52 @@ export const carsApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Car'],
     }),
+
+    createCar: builder.mutation<CarListItem, CreateCarRequest>({
+      query: (body) => ({
+        url: 'cars',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Car'],
+    }),
+
+    updateCar: builder.mutation<CarListItem, { id: string; body: UpdateCarRequest }>({
+      query: ({ id, body }) => ({
+        url: `cars/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Car'],
+    }),
+
+    updateCarStatus: builder.mutation<CarListItem, { id: string; body: UpdateCarStatusRequest }>({
+      query: ({ id, body }) => ({
+        url: `cars/${id}/status`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Car'],
+    }),
+
+    assignCarInstructor: builder.mutation<
+      CarListItem,
+      { id: string; body: AssignCarInstructorRequest }
+    >({
+      query: ({ id, body }) => ({
+        url: `cars/${id}/instructor`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Car'],
+    }),
   }),
 });
 
-export const { useGetCarsQuery } = carsApi;
+export const {
+  useGetCarsQuery,
+  useCreateCarMutation,
+  useUpdateCarMutation,
+  useUpdateCarStatusMutation,
+  useAssignCarInstructorMutation,
+} = carsApi;

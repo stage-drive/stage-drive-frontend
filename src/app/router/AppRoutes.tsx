@@ -18,6 +18,8 @@ import { StudentDashboardPage } from '@/modules/dashboard/pages/StudentDashboard
 import { TeacherDashboardPage } from '@/modules/dashboard/pages/TeacherDashboardPage';
 import { ProfilePage } from '@/modules/profile/pages/ProfilePage';
 import { SchoolSettingsPage } from '@/modules/organization/pages/SchoolSettingsPage';
+import { CarCardPage } from '@/modules/cars/pages/CarCardPage';
+import { CarsPage } from '@/modules/cars/pages/CarsPage';
 import { MyLearningPage } from '@/modules/students/pages/MyLearningPage';
 import { StudentCardPage } from '@/modules/students/pages/StudentCardPage';
 import { StudentStudySectionPage } from '@/modules/students/pages/StudentStudySectionPage';
@@ -74,7 +76,8 @@ export const AppRoutes = () => {
           <Route path="/admin/students" element={<StudentsPage />} />
           <Route path="/admin/students/:id" element={<StudentCardPage />} />
           <Route path="/admin/groups" element={<PlaceholderPage title="Навчальні групи" />} />
-          <Route path="/admin/cars" element={<PlaceholderPage title="Автопарк" />} />
+          <Route path="/admin/cars" element={<CarsPage />} />
+          <Route path="/admin/cars/:id" element={<CarCardPage />} />
           <Route path="/admin/schedule" element={<PlaceholderPage title="Розклад" />} />
           <Route path="/admin/theory" element={<PlaceholderPage title="Теоретичний курс" />} />
           <Route path="/admin/practice" element={<PlaceholderPage title="Практичні заняття" />} />
@@ -116,6 +119,11 @@ export const AppRoutes = () => {
           <Route
             path="/instructor/practice"
             element={<PlaceholderPage title="Практичні заняття" />}
+          />
+          <Route path="/instructor/cars" element={<CarsPage mode="view" cardPathPrefix="/instructor/cars" />} />
+          <Route
+            path="/instructor/cars/:id"
+            element={<CarCardPage mode="view" listPath="/instructor/cars" />}
           />
           <Route
             path="/instructor/my-students"
