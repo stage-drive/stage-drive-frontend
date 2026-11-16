@@ -53,7 +53,7 @@ export const usersApi = baseApi.injectEndpoints({
       query: (query) => ({
         url: 'users',
         params: Object.fromEntries(
-          Object.entries(query).filter(([, value]) => value !== undefined && value !== ''),
+          Object.entries(query).filter(([, value]) => value !== undefined && value !== '')
         ),
       }),
       providesTags: ['User'],

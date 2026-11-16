@@ -88,6 +88,8 @@ const adminMenuItems: AppNavItem[] = [
     label: 'Профіль',
     description: 'Особисті дані та безпека акаунта',
   },
+
+
   { key: 'logout', icon: <LogoutOutlined />, label: 'Вийти', danger: true },
 ];
 

@@ -95,6 +95,7 @@ export const baseApi = createApi({
     'Invitations',
     'Dashboard',
     'Organization',
+    'Groups',
   ],
   endpoints: () => ({}),
 });

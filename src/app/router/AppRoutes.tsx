@@ -26,6 +26,7 @@ import { PlaceholderPage } from '@/shared/components/PlaceholderPage';
 import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import { homeRouteForRole } from '@/app/router/roleHome';
 import { useAuthSession } from '@/app/router/useAuthSession';
+import GroupPage from '@/modules/group/page/GroupPage.tsx';
 
 const guestOnly = (token: string | null, userRole: string | undefined, page: ReactNode) =>
   token && userRole ? <Navigate to="/" replace /> : page;
@@ -45,10 +46,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={guestOnly(token, userRole, <LoginPage />)} />
       <Route path="/register" element={guestOnly(token, userRole, <RegisterPage />)} />
-      <Route
-        path="/forgot-password"
-        element={guestOnly(token, userRole, <ForgotPasswordPage />)}
-      />
+      <Route path="/forgot-password" element={guestOnly(token, userRole, <ForgotPasswordPage />)} />
       <Route path="/reset-password" element={guestOnly(token, userRole, <ResetPasswordPage />)} />
       <Route path="/invite" element={<AcceptInvitationPage />} />
       <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
@@ -56,6 +54,7 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute allowedRoles={['OWNER']} userRole={userRole} />}>
         <Route element={<OwnerLayout />}>
+          <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
           <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
           <Route path="/owner/admins" element={<InviteAdminPage />} />
           <Route path="/owner/branches" element={<PlaceholderPage title="Філії та статистика" />} />
@@ -71,13 +70,14 @@ export const AppRoutes = () => {
           <Route path="/admin/users" element={<InviteMemberPage />} />
           <Route path="/admin/students" element={<StudentsPage />} />
           <Route path="/admin/students/:id" element={<StudentCardPage />} />
-          <Route path="/admin/groups" element={<PlaceholderPage title="Навчальні групи" />} />
+          <Route path="/admin/groups" element={<GroupPage/>} />
           <Route path="/admin/cars" element={<PlaceholderPage title="Автопарк" />} />
           <Route path="/admin/schedule" element={<PlaceholderPage title="Розклад" />} />
           <Route path="/admin/theory" element={<PlaceholderPage title="Теоретичний курс" />} />
           <Route path="/admin/practice" element={<PlaceholderPage title="Практичні заняття" />} />
           <Route path="/admin/topics" element={<PlaceholderPage title="Теми" />} />
           <Route path="/admin/payments" element={<PlaceholderPage title="Оплата" />} />
+
           <Route
             path="/admin/notifications"
             element={<PlaceholderPage title="Сповіщення адміністратора" />}
