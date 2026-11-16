@@ -1,4 +1,5 @@
 import {
+  CalendarOutlined,
   HomeOutlined,
   SolutionOutlined,
   TeamOutlined,
@@ -18,6 +19,12 @@ const teacherMenuItems: AppNavItem[] = [
     icon: <HomeOutlined />,
     label: 'Головна',
     description: 'Огляд ваших груп і занять',
+  },
+  {
+    key: '/teacher/schedule',
+    icon: <CalendarOutlined />,
+    label: 'Мій розклад',
+    description: 'Найближчі теоретичні заняття',
   },
   {
     key: '/teacher/my-groups',

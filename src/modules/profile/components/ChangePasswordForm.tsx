@@ -16,7 +16,7 @@ interface ChangePasswordFormProps {
 }
 
 export const ChangePasswordForm: FC<ChangePasswordFormProps> = ({ form, isSaving, onSubmit }) => (
-  <Card title="Зміна пароля">
+  <Card title="Зміна пароля" style={{ flex: 1 }}>
     <Form form={form} layout="vertical" onFinish={onSubmit}>
       <Form.Item
         label="Поточний пароль"

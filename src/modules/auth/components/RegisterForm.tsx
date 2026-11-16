@@ -128,6 +128,7 @@ export const RegisterForm = () => {
           rules={[
             {
               required: true,
+              whitespace: true,
               message: 'Будь ласка, введіть назву автошколи',
             },
           ]}
@@ -146,6 +147,7 @@ export const RegisterForm = () => {
               rules={[
                 {
                   required: true,
+                  whitespace: true,
                   message: "Будь ласка, введіть ім'я",
                 },
               ]}
@@ -162,6 +164,7 @@ export const RegisterForm = () => {
               rules={[
                 {
                   required: true,
+                  whitespace: true,
                   message: 'Будь ласка, введіть прізвище',
                 },
               ]}
