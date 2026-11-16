@@ -80,6 +80,64 @@ describe('RegisterForm', () => {
     expect(mockCheckEmail).toHaveBeenCalledWith({ email: 'owner@example.com' });
   });
 
+  it('blocks submit and shows errors when school name and person name are empty', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<RegisterForm />);
+
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
+    fireEvent.change(screen.getByLabelText('Пароль'), { target: { value: 'ValidPass123!' } });
+    fireEvent.change(screen.getByLabelText('Підтвердження пароля'), {
+      target: { value: 'ValidPass123!' },
+    });
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Зареєструватися' }));
+
+    expect(await screen.findByText('Будь ласка, введіть назву автошколи')).toBeInTheDocument();
+    expect(screen.getByText("Будь ласка, введіть ім'я")).toBeInTheDocument();
+    expect(screen.getByText('Будь ласка, введіть прізвище')).toBeInTheDocument();
+    expect(mockRegister).not.toHaveBeenCalled();
+  });
+
+  it('blocks submit when required fields are cleared', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<RegisterForm />);
+
+    fireEvent.change(screen.getByLabelText('Назва автошколи'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText("Ім'я"), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Прізвище'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
+    fireEvent.change(screen.getByLabelText('Пароль'), { target: { value: 'ValidPass123!' } });
+    fireEvent.change(screen.getByLabelText('Підтвердження пароля'), {
+      target: { value: 'ValidPass123!' },
+    });
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Зареєструватися' }));
+
+    expect(await screen.findByText('Будь ласка, введіть назву автошколи')).toBeInTheDocument();
+    expect(screen.getByText("Будь ласка, введіть ім'я")).toBeInTheDocument();
+    expect(screen.getByText('Будь ласка, введіть прізвище')).toBeInTheDocument();
+    expect(mockRegister).not.toHaveBeenCalled();
+  });
+
+  it('blocks submit when required name fields contain only spaces', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<RegisterForm />);
+
+    fireEvent.change(screen.getByLabelText('Назва автошколи'), { target: { value: '   ' } });
+    fireEvent.change(screen.getByLabelText("Ім'я"), { target: { value: '   ' } });
+    fireEvent.change(screen.getByLabelText('Прізвище'), { target: { value: '   ' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'owner@example.com' } });
+    fireEvent.change(screen.getByLabelText('Пароль'), { target: { value: 'ValidPass123!' } });
+    fireEvent.change(screen.getByLabelText('Підтвердження пароля'), {
+      target: { value: 'ValidPass123!' },
+    });
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Зареєструватися' }));
+
+    expect(await screen.findByText('Будь ласка, введіть назву автошколи')).toBeInTheDocument();
+    expect(mockRegister).not.toHaveBeenCalled();
+  });
+
   it('shows a validation error when passwords do not match', async () => {
     const user = userEvent.setup();
     renderWithProviders(<RegisterForm />);

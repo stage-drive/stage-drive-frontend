@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Alert, App, Card, Flex, Form, Skeleton } from 'antd';
+import { Alert, App, Card, Col, Flex, Form, Row, Skeleton } from 'antd';
 import type { UploadProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -123,7 +123,7 @@ export const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <Card style={{ maxWidth: 760 }}>
+      <Card>
         <Skeleton avatar active paragraph={{ rows: 4 }} />
       </Card>
     );
@@ -134,7 +134,7 @@ export const ProfilePage = () => {
   }
 
   return (
-    <Flex vertical gap={24} style={{ maxWidth: 760 }}>
+    <Flex vertical gap={16}>
       <ProfileAvatar
         firstName={user.firstName}
         lastName={user.lastName}
@@ -147,13 +147,28 @@ export const ProfilePage = () => {
         onUpload={onUploadAvatar}
         onDelete={() => void onDeleteAvatar()}
       />
-      <ProfileDetailsForm form={profileForm} isSaving={isSavingProfile} onSubmit={onSaveProfile} />
-      <ChangePasswordForm
-        form={passwordForm}
-        isSaving={isChangingPassword}
-        onSubmit={onChangePassword}
-      />
-      <DeleteAccountSection isDeleting={isDeletingAccount} onDelete={() => void onDeleteAccount()} />
+      <Row gutter={[16, 16]} align="stretch">
+        <Col xs={24} lg={12} style={{ display: 'flex' }}>
+          <ProfileDetailsForm
+            form={profileForm}
+            isSaving={isSavingProfile}
+            onSubmit={onSaveProfile}
+          />
+        </Col>
+        <Col xs={24} lg={12} style={{ display: 'flex' }}>
+          <Flex vertical gap={16} style={{ width: '100%' }}>
+            <ChangePasswordForm
+              form={passwordForm}
+              isSaving={isChangingPassword}
+              onSubmit={onChangePassword}
+            />
+            <DeleteAccountSection
+              isDeleting={isDeletingAccount}
+              onDelete={() => void onDeleteAccount()}
+            />
+          </Flex>
+        </Col>
+      </Row>
     </Flex>
   );
 };

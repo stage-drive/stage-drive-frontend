@@ -51,43 +51,54 @@ export const ProfileAvatar: FC<ProfileAvatarProps> = ({
   const accountStatus = status ? STATUS_TAG[status as keyof typeof STATUS_TAG] : undefined;
 
   return (
-    <Card variant="borderless" style={{ background: token.colorFillAlter }}>
-      <Flex align="center" gap={20} wrap>
+    <Card
+      size="small"
+      variant="borderless"
+      style={{ background: token.colorFillAlter }}
+      styles={{ body: { padding: '10px 14px' } }}
+    >
+      <Flex align="center" gap={12} wrap>
         <Avatar
-          size={96}
+          size={64}
           src={resolveMediaUrl(avatarUrl)}
           icon={<UserOutlined />}
           style={{ backgroundColor: token.colorPrimary, flex: 'none' }}
         />
-        <Flex vertical gap={8} style={{ minWidth: 0 }}>
-          <Title level={4} style={{ margin: 0 }}>
-            {firstName} {lastName}
-          </Title>
-          <Text type="secondary">{email}</Text>
-          <Space wrap size={8}>
-            <Tag color="blue">{ROLE_LABEL[role] ?? role}</Tag>
+        <Flex vertical gap={2} style={{ minWidth: 0, flex: 1 }}>
+          <Flex align="center" gap={8} wrap>
+            <Title level={5} style={{ margin: 0 }}>
+              {firstName} {lastName}
+            </Title>
+            <Tag color="blue" style={{ marginInlineEnd: 0 }}>
+              {ROLE_LABEL[role] ?? role}
+            </Tag>
             {accountStatus ? (
-              <Tag color={accountStatus.color}>{accountStatus.label}</Tag>
+              <Tag color={accountStatus.color} style={{ marginInlineEnd: 0 }}>
+                {accountStatus.label}
+              </Tag>
             ) : null}
-          </Space>
-          <Space wrap>
-            <Upload
-              accept="image/*"
-              showUploadList={false}
-              beforeUpload={() => false}
-              onChange={onUpload}
-            >
-              <Button icon={<UploadOutlined />} loading={isUploading}>
-                Завантажити фото
-              </Button>
-            </Upload>
-            {avatarUrl ? (
-              <Button icon={<DeleteOutlined />} danger loading={isDeleting} onClick={onDelete}>
-                Видалити фото
-              </Button>
-            ) : null}
-          </Space>
+          </Flex>
+          <Text type="secondary" ellipsis>
+            {email}
+          </Text>
         </Flex>
+        <Space size={8} wrap>
+          <Upload
+            accept="image/*"
+            showUploadList={false}
+            beforeUpload={() => false}
+            onChange={onUpload}
+          >
+            <Button icon={<UploadOutlined />} loading={isUploading}>
+              Завантажити фото
+            </Button>
+          </Upload>
+          {avatarUrl ? (
+            <Button icon={<DeleteOutlined />} danger loading={isDeleting} onClick={onDelete}>
+              Видалити фото
+            </Button>
+          ) : null}
+        </Space>
       </Flex>
     </Card>
   );

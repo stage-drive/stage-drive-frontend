@@ -1,3 +1,4 @@
+
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { renderWithProviders, screen, waitFor } from '../../../test-utils';
@@ -10,6 +11,7 @@ const { mockLogin, mockNavigate } = vi.hoisted(() => ({
 
 vi.mock('@/store/api/endpoints/authApi', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/store/api/endpoints/authApi')>();
+
   return {
     ...actual,
     useLoginMutation: () => [mockLogin, { isLoading: false }],
@@ -18,6 +20,7 @@ vi.mock('@/store/api/endpoints/authApi', async (importOriginal) => {
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
+
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -28,6 +31,8 @@ describe('LoginForm', () => {
   beforeEach(() => {
     mockLogin.mockReset();
     mockNavigate.mockReset();
+
+    localStorage.clear();
   });
 
   it('renders email, password and actions', () => {
@@ -35,33 +40,45 @@ describe('LoginForm', () => {
 
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
     expect(screen.getByLabelText('Пароль')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^Увійти$/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Увійти через Google/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Забули пароль?' })).toHaveAttribute(
-      'href',
-      '/forgot-password'
-    );
+
+    expect(
+      screen.getByRole('button', { name: /^Увійти$/ })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', { name: /Увійти через Google/ })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('link', { name: 'Забули пароль?' })
+    ).toHaveAttribute('href', '/forgot-password');
   });
 
   it('shows validation errors when submitted empty', async () => {
     const user = userEvent.setup();
+
     renderWithProviders(<LoginForm />);
 
     await user.click(screen.getByRole('button', { name: /^Увійти$/ }));
 
     expect(await screen.findByText('Введіть email')).toBeInTheDocument();
     expect(screen.getByText('Введіть пароль')).toBeInTheDocument();
+
     expect(mockLogin).not.toHaveBeenCalled();
   });
 
   it('stores tokens and navigates after a successful login', async () => {
     const user = userEvent.setup();
+
     mockLogin.mockReturnValue({
       unwrap: () =>
         Promise.resolve({
           accessToken: 'access-token',
           refreshToken: 'refresh-token',
-          user: { id: '1', role: 'OWNER' },
+          user: {
+            id: '1',
+            role: 'OWNER',
+          },
         }),
     });
 
@@ -69,6 +86,7 @@ describe('LoginForm', () => {
 
     await user.type(screen.getByLabelText('Email'), 'owner@example.com');
     await user.type(screen.getByLabelText('Пароль'), 'password123');
+
     await user.click(screen.getByRole('button', { name: /^Увійти$/ }));
 
     await waitFor(() => {
@@ -78,17 +96,23 @@ describe('LoginForm', () => {
       });
     });
 
-    expect(localStorage.getItem('token')).toBe('access-token');
-    expect(localStorage.getItem('refreshToken')).toBe('refresh-token');
-    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+    await waitFor(() => {
+      expect(localStorage.getItem('token')).toBe('access-token');
+      expect(localStorage.getItem('refreshToken')).toBe('refresh-token');
+      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+    });
   });
 
-  it('shows an error message when credentials are invalid', async () => {
+  it('shows an error message when credentials are invalid (401)', async () => {
     const user = userEvent.setup();
+
     mockLogin.mockReturnValue({
       unwrap: () =>
         Promise.reject({
-          data: { message: 'Invalid credentials' },
+          status: 401,
+          data: {
+            message: 'Invalid credentials',
+          },
         }),
     });
 
@@ -96,21 +120,63 @@ describe('LoginForm', () => {
 
     await user.type(screen.getByLabelText('Email'), 'owner@example.com');
     await user.type(screen.getByLabelText('Пароль'), 'wrong-password');
+
     await user.click(screen.getByRole('button', { name: /^Увійти$/ }));
 
-    expect(await screen.findByText('Невірний email або пароль')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Невірний email або пароль')
+    ).toBeInTheDocument();
+
     expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('shows backend error message when account is blocked (403)', async () => {
+    const user = userEvent.setup();
+
+    const backendMessage =
+      'Доступ обмежено. Зверніться до адміністратора за інвайтом.';
+
+    mockLogin.mockReturnValue({
+      unwrap: () =>
+        Promise.reject({
+          status: 403,
+          data: {
+            message: backendMessage,
+          },
+        }),
+    });
+
+    renderWithProviders(<LoginForm />);
+
+    await user.type(screen.getByLabelText('Email'), 'owner@example.com');
+    await user.type(screen.getByLabelText('Пароль'), 'password123');
+
+    await user.click(screen.getByRole('button', { name: /^Увійти$/ }));
+
+    expect(await screen.findByText(backendMessage)).toBeInTheDocument();
+
+    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('redirects to Google auth', async () => {
     const user = userEvent.setup();
+
     const location = { href: 'http://localhost:3000/' };
+
     vi.stubGlobal('location', location);
 
     renderWithProviders(<LoginForm />);
-    await user.click(screen.getByRole('button', { name: /Увійти через Google/ }));
+
+    await user.click(
+      screen.getByRole('button', { name: /Увійти через Google/ })
+    );
 
     expect(location.href).toMatch(/\/auth\/google$/);
+
+    vi.unstubAllGlobals();
   });
 });

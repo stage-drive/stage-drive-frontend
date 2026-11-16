@@ -13,33 +13,52 @@ export const LoginForm = () => {
   const [login, { isLoading }] = useLoginMutation();
   const { message } = App.useApp();
 
-  const onFinish = async (values: LoginRequest) => {
-    try {
-      const response = await login(values).unwrap();
+  
+const onFinish = async (values: LoginRequest) => {
+  try {
+    const response = await login(values).unwrap();
 
-      localStorage.setItem('token', response.accessToken);
-      if (response.refreshToken) {
-        localStorage.setItem('refreshToken', response.refreshToken);
-      }
+    localStorage.setItem('token', response.accessToken);
 
-      window.dispatchEvent(new Event('auth-change'));
-      message.success('Успішний вхід!');
-      navigate('/', { replace: true });
-    } catch (err: unknown) {
-      const rawMessage = (err as { data?: { message?: string | string[] } }).data?.message;
-      let userFriendlyMessage = 'Невірний email або пароль';
-
-      if (rawMessage === 'Invalid credentials') {
-        userFriendlyMessage = 'Невірний email або пароль';
-      } else if (rawMessage === 'User not found') {
-        userFriendlyMessage = 'Користувача з таким email не знайдено';
-      } else if (Array.isArray(rawMessage)) {
-        userFriendlyMessage = rawMessage.join(', ');
-      }
-
-      message.error(userFriendlyMessage);
+    if (response.refreshToken) {
+      localStorage.setItem('refreshToken', response.refreshToken);
+    } else {
+      localStorage.removeItem('refreshToken');
     }
-  };
+
+    window.dispatchEvent(new Event('auth-change'));
+    message.success('Успішний вхід!');
+    navigate('/', { replace: true });
+  } catch (err: unknown) {
+    const error = err as {
+      status?: number | string;
+      data?: {
+        message?: string | string[];
+        detail?: string;
+      };
+    };
+
+    const rawMessage = error.data?.message ?? error.data?.detail;
+
+    let userFriendlyMessage = 'Не вдалося увійти. Спробуйте ще раз.';
+
+    if (error.status === 401) {
+      userFriendlyMessage = 'Невірний email або пароль';
+    } else if (error.status === 403) {
+      userFriendlyMessage =
+        typeof rawMessage === 'string'
+          ? rawMessage
+          : 'Доступ обмежено. Зверніться до адміністратора за інвайтом.';
+    } else if (Array.isArray(rawMessage)) {
+      userFriendlyMessage = rawMessage.join(', ');
+    } else if (typeof rawMessage === 'string') {
+      userFriendlyMessage = rawMessage;
+    }
+
+    message.error(userFriendlyMessage);
+  }
+};
+
 
   return (
     <AuthSplitLayout

@@ -18,6 +18,10 @@ import { StudentDashboardPage } from '@/modules/dashboard/pages/StudentDashboard
 import { TeacherDashboardPage } from '@/modules/dashboard/pages/TeacherDashboardPage';
 import { ProfilePage } from '@/modules/profile/pages/ProfilePage';
 import { SchoolSettingsPage } from '@/modules/organization/pages/SchoolSettingsPage';
+import { AdminSchedulePage } from '@/modules/schedule/pages/AdminSchedulePage';
+import { InstructorSchedulePage } from '@/modules/schedule/pages/InstructorSchedulePage';
+import { StudentSchedulePage } from '@/modules/schedule/pages/StudentSchedulePage';
+import { TeacherSchedulePage } from '@/modules/schedule/pages/TeacherSchedulePage';
 import { CarCardPage } from '@/modules/cars/pages/CarCardPage';
 import { CarsPage } from '@/modules/cars/pages/CarsPage';
 import { MyLearningPage } from '@/modules/students/pages/MyLearningPage';
@@ -78,7 +82,7 @@ export const AppRoutes = () => {
           <Route path="/admin/groups" element={<PlaceholderPage title="Навчальні групи" />} />
           <Route path="/admin/cars" element={<CarsPage />} />
           <Route path="/admin/cars/:id" element={<CarCardPage />} />
-          <Route path="/admin/schedule" element={<PlaceholderPage title="Розклад" />} />
+          <Route path="/admin/schedule" element={<AdminSchedulePage />} />
           <Route path="/admin/theory" element={<PlaceholderPage title="Теоретичний курс" />} />
           <Route path="/admin/practice" element={<PlaceholderPage title="Практичні заняття" />} />
           <Route path="/admin/topics" element={<PlaceholderPage title="Теми" />} />
@@ -94,6 +98,7 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={['TEACHER']} userRole={userRole} />}>
         <Route element={<TeacherLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+          <Route path="/teacher/schedule" element={<TeacherSchedulePage />} />
           <Route path="/teacher/profile" element={<ProfilePage />} />
           <Route path="/teacher/my-groups" element={<PlaceholderPage title="Мої групи" />} />
           <Route
@@ -115,7 +120,7 @@ export const AppRoutes = () => {
         <Route element={<InstructorLayout />}>
           <Route path="/instructor/dashboard" element={<InstructorDashboardPage />} />
           <Route path="/instructor/profile" element={<ProfilePage />} />
-          <Route path="/instructor/schedule" element={<PlaceholderPage title="Мій розклад" />} />
+          <Route path="/instructor/schedule" element={<InstructorSchedulePage />} />
           <Route
             path="/instructor/practice"
             element={<PlaceholderPage title="Практичні заняття" />}
@@ -144,7 +149,7 @@ export const AppRoutes = () => {
         <Route element={<StudentLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboardPage />} />
           <Route path="/student/profile" element={<ProfilePage />} />
-          <Route path="/student/schedule" element={<PlaceholderPage title="Мій розклад" />} />
+          <Route path="/student/schedule" element={<StudentSchedulePage />} />
           <Route path="/student/theory" element={<StudentStudySectionPage section="theory" />} />
           <Route path="/student/tests" element={<StudentStudySectionPage section="tests" />} />
           <Route path="/student/practice" element={<StudentStudySectionPage section="practice" />} />
